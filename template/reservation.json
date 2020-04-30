@@ -1,0 +1,575 @@
+{
+  "type": "carousel",
+  "contents": [
+      {
+      "type": "bubble",
+      "size": "kilo",
+      "body": {
+          "type": "box",
+          "layout": "vertical",
+          "contents": [
+          {
+              "type": "box",
+              "layout": "vertical",
+              "contents": [
+              {
+                  "type": "text",
+                  "text": "04-30 (四)",
+                  "align": "center",
+                  "size": "xl",
+                  "offsetTop": "5px",
+                  "weight": "bold"
+              },
+              {
+                  "type": "spacer"
+              }
+              ]
+          },
+          {
+              "type": "box",
+              "layout": "horizontal",
+              "contents": [
+              {
+                  "type": "text",
+                  "text": "09:00-09:30",
+                  "align": "center",
+                  "size": "xl",
+                  "gravity": "center"
+              },
+              {
+                  "type": "button",
+                  "action": {
+                  "type": "postback",
+                  "label": "預約",
+                  "data": "time 04-30 (四) 09:00-09:30 預約"
+                  },
+                  "flex": 0,
+                  "style": "primary"
+              }
+              ]
+          },
+          {
+              "type": "separator",
+              "margin": "md"
+          },
+          {
+              "type": "box",
+              "layout": "horizontal",
+              "contents": [
+              {
+                  "type": "text",
+                  "text": "09:30-10:00",
+                  "align": "center",
+                  "size": "xl",
+                  "gravity": "center"
+              },
+              {
+                  "type": "button",
+                  "action": {
+                  "type": "postback",
+                  "label": "預約",
+                  "data": "time 04-30 (四) 09:30-10:00 預約"
+                  },
+                  "flex": 0,
+                  "style": "primary"
+              }
+              ]
+          },
+          {
+              "type": "separator",
+              "margin": "md"
+          },
+          {
+              "type": "box",
+              "layout": "horizontal",
+              "contents": [
+              {
+                  "type": "text",
+                  "text": "10:00-10:30",
+                  "align": "center",
+                  "size": "xl",
+                  "gravity": "center"
+              },
+              {
+                  "type": "button",
+                  "action": {
+                  "type": "postback",
+                  "label": "預約",
+                  "data": "time 04-30 (四) 10:00-10:30 預約"
+                  },
+                  "flex": 0,
+                  "style": "primary"
+              }
+              ]
+          },
+          {
+              "type": "separator",
+              "margin": "md"
+          },
+          {
+              "type": "box",
+              "layout": "horizontal",
+              "contents": [
+              {
+                  "type": "text",
+                  "text": "10:30-11:00",
+                  "align": "center",
+                  "size": "xl",
+                  "gravity": "center"
+              },
+              {
+                  "type": "button",
+                  "action": {
+                  "type": "postback",
+                  "label": "預約",
+                  "data": "time 04-30 (四) 10:30-11:00 預約"
+                  },
+                  "flex": 0,
+                  "style": "primary"
+              }
+              ]
+          },
+          {
+              "type": "separator",
+              "margin": "md"
+          },
+          {
+              "type": "box",
+              "layout": "horizontal",
+              "contents": [
+              {
+                  "type": "text",
+                  "text": "11:00-11:30",
+                  "align": "center",
+                  "size": "xl",
+                  "gravity": "center"
+              },
+              {
+                  "type": "button",
+                  "action": {
+                  "type": "postback",
+                  "label": "預約",
+                  "data": "time 04-30 (四) 11:00-11:30 預約"
+                  },
+                  "flex": 0,
+                  "style": "primary"
+              }
+              ]
+          },
+          {
+              "type": "separator",
+              "margin": "md"
+          },
+          {
+              "type": "box",
+              "layout": "horizontal",
+              "contents": [
+              {
+                  "type": "text",
+                  "text": "11:30-12:00",
+                  "align": "center",
+                  "size": "xl",
+                  "gravity": "center"
+              },
+              {
+                  "type": "button",
+                  "action": {
+                  "type": "postback",
+                  "label": "預約",
+                  "data": "time 04-30 (四) 11:30-12:00 預約"
+                  },
+                  "flex": 0,
+                  "style": "primary"
+              }
+              ]
+          },
+          {
+              "type": "separator",
+              "margin": "md"
+          },
+          {
+              "type": "box",
+              "layout": "horizontal",
+              "contents": [
+              {
+                  "type": "text",
+                  "text": "12:00-12:30",
+                  "align": "center",
+                  "size": "xl",
+                  "gravity": "center"
+              },
+              {
+                  "type": "button",
+                  "action": {
+                  "type": "postback",
+                  "label": "預約",
+                  "data": "time 04-30 (四) 12:00-12:30 預約"
+                  },
+                  "flex": 0,
+                  "style": "primary"
+              }
+              ]
+          },
+          {
+              "type": "separator",
+              "margin": "md"
+          },
+          {
+              "type": "box",
+              "layout": "horizontal",
+              "contents": [
+              {
+                  "type": "text",
+                  "text": "12:30-13:00",
+                  "align": "center",
+                  "size": "xl",
+                  "gravity": "center"
+              },
+              {
+                  "type": "button",
+                  "action": {
+                  "type": "postback",
+                  "label": "預約",
+                  "data": "time 04-30 (四) 12:30-13:00 預約"
+                  },
+                  "flex": 0,
+                  "style": "primary"
+              }
+              ]
+          },
+          {
+              "type": "separator",
+              "margin": "md"
+          },
+          {
+              "type": "box",
+              "layout": "horizontal",
+              "contents": [
+              {
+                  "type": "text",
+                  "text": "13:00-13:30",
+                  "align": "center",
+                  "size": "xl",
+                  "gravity": "center"
+              },
+              {
+                  "type": "button",
+                  "action": {
+                  "type": "postback",
+                  "label": "預約",
+                  "data": "time 04-30 (四) 13:00-13:30 預約"
+                  },
+                  "flex": 0,
+                  "style": "primary"
+              }
+              ]
+          },
+          {
+              "type": "box",
+              "layout": "vertical",
+              "contents": [
+              {
+                  "type": "text",
+                  "text": "04-30 (四)",
+                  "align": "center",
+                  "size": "xl",
+                  "offsetTop": "5px",
+                  "weight": "bold"
+              },
+              {
+                  "type": "spacer"
+              }
+              ]
+          }
+          ],
+          "spacing": "sm",
+          "paddingAll": "13px"
+      }
+      },
+      {
+      "type": "bubble",
+      "size": "kilo",
+      "body": {
+          "type": "box",
+          "layout": "vertical",
+          "contents": [
+          {
+              "type": "box",
+              "layout": "vertical",
+              "contents": [
+              {
+                  "type": "text",
+                  "text": "04-30 (四)",
+                  "align": "center",
+                  "size": "xl",
+                  "offsetTop": "5px",
+                  "weight": "bold"
+              },
+              {
+                  "type": "spacer"
+              }
+              ]
+          },
+          {
+              "type": "box",
+              "layout": "horizontal",
+              "contents": [
+              {
+                  "type": "text",
+                  "text": "13:30-14:00",
+                  "align": "center",
+                  "size": "xl",
+                  "gravity": "center"
+              },
+              {
+                  "type": "button",
+                  "action": {
+                  "type": "postback",
+                  "label": "預約",
+                  "data": "time 04-30 (四) 13:30-14:00 預約"
+                  },
+                  "flex": 0,
+                  "style": "primary"
+              }
+              ]
+          },
+          {
+              "type": "separator",
+              "margin": "md"
+          },
+          {
+              "type": "box",
+              "layout": "horizontal",
+              "contents": [
+              {
+                  "type": "text",
+                  "text": "14:00-14:30",
+                  "align": "center",
+                  "size": "xl",
+                  "gravity": "center"
+              },
+              {
+                  "type": "button",
+                  "action": {
+                  "type": "postback",
+                  "label": "預約",
+                  "data": "time 04-30 (四) 14:00-14:30 預約"
+                  },
+                  "flex": 0,
+                  "style": "primary"
+              }
+              ]
+          },
+          {
+              "type": "separator",
+              "margin": "md"
+          },
+          {
+              "type": "box",
+              "layout": "horizontal",
+              "contents": [
+              {
+                  "type": "text",
+                  "text": "14:30-15:00",
+                  "align": "center",
+                  "size": "xl",
+                  "gravity": "center"
+              },
+              {
+                  "type": "button",
+                  "action": {
+                  "type": "postback",
+                  "label": "預約",
+                  "data": "time 04-30 (四) 14:30-15:00 預約"
+                  },
+                  "flex": 0,
+                  "style": "primary"
+              }
+              ]
+          },
+          {
+              "type": "separator",
+              "margin": "md"
+          },
+          {
+              "type": "box",
+              "layout": "horizontal",
+              "contents": [
+              {
+                  "type": "text",
+                  "text": "15:00-15:30",
+                  "align": "center",
+                  "size": "xl",
+                  "gravity": "center"
+              },
+              {
+                  "type": "button",
+                  "action": {
+                  "type": "postback",
+                  "label": "預約",
+                  "data": "time 04-30 (四) 15:00-15:30 預約"
+                  },
+                  "flex": 0,
+                  "style": "primary"
+              }
+              ]
+          },
+          {
+              "type": "separator",
+              "margin": "md"
+          },
+          {
+              "type": "box",
+              "layout": "horizontal",
+              "contents": [
+              {
+                  "type": "text",
+                  "text": "15:30-16:00",
+                  "align": "center",
+                  "size": "xl",
+                  "gravity": "center"
+              },
+              {
+                  "type": "button",
+                  "action": {
+                  "type": "postback",
+                  "label": "預約",
+                  "data": "time 04-30 (四) 15:30-16:00 預約"
+                  },
+                  "flex": 0,
+                  "style": "primary"
+              }
+              ]
+          },
+          {
+              "type": "separator",
+              "margin": "md"
+          },
+          {
+              "type": "box",
+              "layout": "horizontal",
+              "contents": [
+              {
+                  "type": "text",
+                  "text": "16:00-16:30",
+                  "align": "center",
+                  "size": "xl",
+                  "gravity": "center"
+              },
+              {
+                  "type": "button",
+                  "action": {
+                  "type": "postback",
+                  "label": "預約",
+                  "data": "time 04-30 (四) 16:00-16:30 預約"
+                  },
+                  "flex": 0,
+                  "style": "primary"
+              }
+              ]
+          },
+          {
+              "type": "separator",
+              "margin": "md"
+          },
+          {
+              "type": "box",
+              "layout": "horizontal",
+              "contents": [
+              {
+                  "type": "text",
+                  "text": "16:30-17:00",
+                  "align": "center",
+                  "size": "xl",
+                  "gravity": "center"
+              },
+              {
+                  "type": "button",
+                  "action": {
+                  "type": "postback",
+                  "label": "預約",
+                  "data": "time 04-30 (四) 16:30-17:00 預約"
+                  },
+                  "flex": 0,
+                  "style": "primary"
+              }
+              ]
+          },
+          {
+            "type": "separator",
+            "margin": "md"
+          },
+          {
+              "type": "box",
+              "layout": "horizontal",
+              "contents": [
+              {
+                  "type": "text",
+                  "text": "17:00-17:30",
+                  "align": "center",
+                  "size": "xl",
+                  "gravity": "center"
+              },
+              {
+                  "type": "button",
+                  "action": {
+                  "type": "postback",
+                  "label": "預約",
+                  "data": "time 04-30 (四) 17:00-17:30 預約"
+                  },
+                  "flex": 0,
+                  "style": "primary"
+              }
+              ]
+          },
+          {
+              "type": "separator",
+              "margin": "md"
+          },
+          {
+              "type": "box",
+              "layout": "horizontal",
+              "contents": [
+              {
+                  "type": "text",
+                  "text": "17:30-18:00",
+                  "align": "center",
+                  "size": "xl",
+                  "gravity": "center"
+              },
+              {
+                  "type": "button",
+                  "action": {
+                  "type": "postback",
+                  "label": "預約",
+                  "data": "time 04-30 (四) 17:30-18:00 預約"
+                  },
+                  "flex": 0,
+                  "style": "primary"
+              }
+              ]
+          },
+          {
+              "type": "box",
+              "layout": "vertical",
+              "contents": [
+              {
+                  "type": "text",
+                  "text": "04-30 (四)",
+                  "align": "center",
+                  "size": "xl",
+                  "offsetTop": "5px",
+                  "weight": "bold"
+              },
+              {
+                  "type": "spacer"
+              }
+              ]
+          }
+          ],
+          "spacing": "sm",
+          "paddingAll": "13px"
+      }
+      }
+  ]
+}

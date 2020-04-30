@@ -1,0 +1,105 @@
+{
+  "type": "carousel",
+  "contents": [
+    {
+      "type": "bubble",
+      "body": {
+        "type": "box",
+        "layout": "vertical",
+        "contents": [
+          {
+            "type": "text",
+            "text": "預約紀錄",
+            "weight": "bold",
+            "color": "#1DB446",
+            "size": "xl",
+            "gravity": "center",
+            "align": "center"
+          },
+          {
+            "type": "separator",
+            "margin": "lg"
+          },
+          {
+            "type": "box",
+            "layout": "vertical",
+            "margin": "xxl",
+            "spacing": "sm",
+            "contents": [
+              {
+                "type": "box",
+                "layout": "horizontal",
+                "contents": [
+                  {
+                    "type": "text",
+                    "text": "預約日期",
+                    "size": "lg",
+                    "color": "#555555",
+                    "flex": 0
+                  },
+                  {
+                    "type": "text",
+                    "text": "05-18 (三)",
+                    "size": "lg",
+                    "color": "#111111",
+                    "align": "end"
+                  }
+                ]
+              },
+              {
+                "type": "box",
+                "layout": "horizontal",
+                "contents": [
+                  {
+                    "type": "text",
+                    "text": "預約時間",
+                    "size": "lg",
+                    "color": "#555555",
+                    "flex": 0
+                  },
+                  {
+                    "type": "text",
+                    "text": "14:00-15:00",
+                    "size": "lg",
+                    "color": "#111111",
+                    "align": "end"
+                  }
+                ]
+              },
+              {
+                "type": "box",
+                "layout": "horizontal",
+                "contents": [
+                  {
+                    "type": "text",
+                    "text": "美髮項目",
+                    "size": "lg",
+                    "color": "#555555",
+                    "flex": 0
+                  },
+                  {
+                    "type": "text",
+                    "text": "燙髮",
+                    "size": "lg",
+                    "color": "#111111",
+                    "align": "end"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "button",
+            "action": {
+              "type": "postback",
+              "label": "刪除預約",
+              "data": "刪除預約"
+            },
+            "style": "primary",
+            "margin": "md"
+          }
+        ]
+      }
+    }
+  ]
+}

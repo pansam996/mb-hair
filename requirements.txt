@@ -1,0 +1,6 @@
+Flask==1.1.1
+gunicorn==20.0.4
+line-bot-sdk==1.16.0
+setuptools==40.3.0
+psycopg2
+imgurpython
