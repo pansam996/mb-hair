@@ -104,6 +104,857 @@ def reply_postback(event):
     userID = event.source.user_id
     userName = line_bot_api.get_profile(event.source.user_id).display_name
 
+    if event.postback.data == "最新消息":
+        #DB set
+        DATABASE_URL = os.environ['DATABASE_URL']
+        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+        cursor = conn.cursor()
+
+        sql = "select * from news_table order by id DESC"
+        cursor.execute(sql)
+        conn.commit()
+        result = cursor.fetchall()
+
+        if not result:
+            news_status = "目前沒有最新消息唷😖"
+
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(news_status))
+            return 0
+
+        else:
+            content = {
+            "type": "carousel",
+            "contents": [
+                ]
+            }
+            max_num = len(result)
+            if max_num > 10:
+                max_num = 10
+
+            for i in range(max_num):
+                style1 = {
+                    "type": "bubble",
+                    "size": "mega",
+                    "body": {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "box",
+                            "layout": "vertical",
+                            "contents": [
+                            {
+                                "type": "image",
+                                "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                                "aspectMode": "cover",
+                                "size": "full",
+                                "aspectRatio": "50:100"
+                            }
+                            ],
+                            "cornerRadius": "10px"
+                        },
+                        {
+                            "type": "text",
+                            "text": "最新消息",
+                            "size": "lg",
+                            "weight": "bold",
+                            "offsetTop": "5px"
+                        }
+                        ],
+                        "paddingAll": "10px"
+                    }
+                }
+
+                style2 = {
+                    "type": "bubble",
+                    "size": "mega",
+                    "body": {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "box",
+                            "layout": "vertical",
+                            "contents": [
+                            {
+                                "type": "image",
+                                "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                                "aspectMode": "cover",
+                                "size": "full",
+                                "aspectRatio": "100:100"
+                            },
+                            {
+                                "type": "image",
+                                "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                                "aspectMode": "cover",
+                                "size": "full",
+                                "aspectRatio": "100:100"
+                            }
+                            ],
+                            "cornerRadius": "10px"
+                        },
+                        {
+                            "type": "text",
+                            "text": "最新消息",
+                            "size": "lg",
+                            "weight": "bold",
+                            "offsetTop": "5px"
+                        }
+                        ],
+                        "paddingAll": "10px"
+                    }
+                }
+
+                if result[i][3] != "":
+                    style2['body']['contents'][0]['contents'][0]['url'] = result[i][2]
+                    style2['body']['contents'][0]['contents'][1]['url'] = result[i][3]
+                    # 字數過多時
+                    # 92~104
+                    if len(result[i][1]) > 91:
+                        for j in range(2,9):
+                            text_block = {
+                                "type": "text",
+                                "text": "最新消息",
+                                "size": "lg",
+                                "weight": "bold",
+                                "offsetTop": "3px"
+                            }
+                            style2['body']['contents'].insert(j,text_block)
+                        style2['body']['contents'][1]['text'] = result[i][1][:13]
+                        style2['body']['contents'][2]['text'] = result[i][1][13:26]
+                        style2['body']['contents'][3]['text'] = result[i][1][26:39]
+                        style2['body']['contents'][4]['text'] = result[i][1][39:52]
+                        style2['body']['contents'][5]['text'] = result[i][1][52:65]
+                        style2['body']['contents'][6]['text'] = result[i][1][65:78]
+                        style2['body']['contents'][7]['text'] = result[i][1][78:91]
+                        style2['body']['contents'][8]['text'] = result[i][1][91:]
+
+                    # 78~91
+                    elif len(result[i][1]) > 78:
+                        for j in range(2,8):
+                            text_block = {
+                                "type": "text",
+                                "text": "最新消息",
+                                "size": "lg",
+                                "weight": "bold",
+                                "offsetTop": "3px"
+                            }
+                            style2['body']['contents'].insert(j,text_block)
+                        style2['body']['contents'][1]['text'] = result[i][1][:13]
+                        style2['body']['contents'][2]['text'] = result[i][1][13:26]
+                        style2['body']['contents'][3]['text'] = result[i][1][26:39]
+                        style2['body']['contents'][4]['text'] = result[i][1][39:52]
+                        style2['body']['contents'][5]['text'] = result[i][1][52:65]
+                        style2['body']['contents'][6]['text'] = result[i][1][65:78]
+                        style2['body']['contents'][7]['text'] = result[i][1][78:]
+                    elif len(result[i][1]) > 65:
+                        for j in range(2,7):
+                            text_block = {
+                                "type": "text",
+                                "text": "最新消息",
+                                "size": "lg",
+                                "weight": "bold",
+                                "offsetTop": "3px"
+                            }
+                            style2['body']['contents'].insert(j,text_block)
+                        print(i)
+                        style2['body']['contents'][1]['text'] = result[i][1][:13]
+                        style2['body']['contents'][2]['text'] = result[i][1][13:26]
+                        style2['body']['contents'][3]['text'] = result[i][1][26:39]
+                        style2['body']['contents'][4]['text'] = result[i][1][39:52]
+                        style2['body']['contents'][5]['text'] = result[i][1][52:65]
+                        style2['body']['contents'][6]['text'] = result[i][1][65:]
+                    elif len(result[i][1]) > 52:
+                        for j in range(2,6):
+                            text_block = {
+                                "type": "text",
+                                "text": "最新消息",
+                                "size": "lg",
+                                "weight": "bold",
+                                "offsetTop": "3px"
+                            }
+                            style2['body']['contents'].insert(j,text_block)
+                        style2['body']['contents'][1]['text'] = result[i][1][:13]
+                        style2['body']['contents'][2]['text'] = result[i][1][13:26]
+                        style2['body']['contents'][3]['text'] = result[i][1][26:39]
+                        style2['body']['contents'][4]['text'] = result[i][1][39:52]
+                        style2['body']['contents'][5]['text'] = result[i][1][52:]
+                    elif len(result[i][1]) > 39:
+                        for j in range(2,5):
+                            text_block = {
+                                "type": "text",
+                                "text": "最新消息",
+                                "size": "lg",
+                                "weight": "bold",
+                                "offsetTop": "3px"
+                            }
+                            style2['body']['contents'].insert(j,text_block)
+                        style2['body']['contents'][1]['text'] = result[i][1][:13]
+                        style2['body']['contents'][2]['text'] = result[i][1][13:26]
+                        style2['body']['contents'][3]['text'] = result[i][1][26:39]
+                        style2['body']['contents'][4]['text'] = result[i][1][39:]
+                    elif len(result[i][1]) > 26:
+                        for j in range(2,4):
+                            text_block = {
+                                "type": "text",
+                                "text": "最新消息",
+                                "size": "lg",
+                                "weight": "bold",
+                                "offsetTop": "3px"
+                            }
+                            style2['body']['contents'].insert(j,text_block)
+                        style2['body']['contents'][1]['text'] = result[i][1][:13]
+                        style2['body']['contents'][2]['text'] = result[i][1][13:26]
+                        style2['body']['contents'][3]['text'] = result[i][1][26:]
+                    elif len(result[i][1]) > 13:
+                        for j in range(2,3):
+                            text_block = {
+                                "type": "text",
+                                "text": "最新消息",
+                                "size": "lg",
+                                "weight": "bold",
+                                "offsetTop": "3px"
+                            }
+                            style2['body']['contents'].insert(j,text_block)
+                        style2['body']['contents'][1]['text'] = result[i][1][:13]
+                        style2['body']['contents'][2]['text'] = result[i][1][13:]
+                    else:
+                        style2['body']['contents'][1]['text'] = result[i][1]
+
+                    content['contents'].append(style2)
+
+                else:
+                    style1['body']['contents'][0]['contents'][0]['url'] = result[i][2]
+                    # 字數過多時
+                    # 92~104
+                    if len(result[i][1]) > 91:
+                        for j in range(2,9):
+                            text_block = {
+                                "type": "text",
+                                "text": "最新消息",
+                                "size": "lg",
+                                "weight": "bold",
+                                "offsetTop": "3px"
+                            }
+                            style1['body']['contents'].insert(j,text_block)
+                        style1['body']['contents'][1]['text'] = result[i][1][:13]
+                        style1['body']['contents'][2]['text'] = result[i][1][13:26]
+                        style1['body']['contents'][3]['text'] = result[i][1][26:39]
+                        style1['body']['contents'][4]['text'] = result[i][1][39:52]
+                        style1['body']['contents'][5]['text'] = result[i][1][52:65]
+                        style1['body']['contents'][6]['text'] = result[i][1][65:78]
+                        style1['body']['contents'][7]['text'] = result[i][1][78:91]
+                        style1['body']['contents'][8]['text'] = result[i][1][91:]
+
+                    # 78~91
+                    elif len(result[i][1]) > 78:
+                        for j in range(2,8):
+                            text_block = {
+                                "type": "text",
+                                "text": "最新消息",
+                                "size": "lg",
+                                "weight": "bold",
+                                "offsetTop": "3px"
+                            }
+                            style1['body']['contents'].insert(j,text_block)
+                        style1['body']['contents'][1]['text'] = result[i][1][:13]
+                        style1['body']['contents'][2]['text'] = result[i][1][13:26]
+                        style1['body']['contents'][3]['text'] = result[i][1][26:39]
+                        style1['body']['contents'][4]['text'] = result[i][1][39:52]
+                        style1['body']['contents'][5]['text'] = result[i][1][52:65]
+                        style1['body']['contents'][6]['text'] = result[i][1][65:78]
+                        style1['body']['contents'][7]['text'] = result[i][1][78:]
+                    elif len(result[i][1]) > 65:
+                        for j in range(2,7):
+                            text_block = {
+                                "type": "text",
+                                "text": "最新消息",
+                                "size": "lg",
+                                "weight": "bold",
+                                "offsetTop": "3px"
+                            }
+                            style1['body']['contents'].insert(j,text_block)
+                        print(i)
+                        style1['body']['contents'][1]['text'] = result[i][1][:13]
+                        style1['body']['contents'][2]['text'] = result[i][1][13:26]
+                        style1['body']['contents'][3]['text'] = result[i][1][26:39]
+                        style1['body']['contents'][4]['text'] = result[i][1][39:52]
+                        style1['body']['contents'][5]['text'] = result[i][1][52:65]
+                        style1['body']['contents'][6]['text'] = result[i][1][65:]
+                    elif len(result[i][1]) > 52:
+                        for j in range(2,6):
+                            text_block = {
+                                "type": "text",
+                                "text": "最新消息",
+                                "size": "lg",
+                                "weight": "bold",
+                                "offsetTop": "3px"
+                            }
+                            style1['body']['contents'].insert(j,text_block)
+                        style1['body']['contents'][1]['text'] = result[i][1][:13]
+                        style1['body']['contents'][2]['text'] = result[i][1][13:26]
+                        style1['body']['contents'][3]['text'] = result[i][1][26:39]
+                        style1['body']['contents'][4]['text'] = result[i][1][39:52]
+                        style1['body']['contents'][5]['text'] = result[i][1][52:]
+                    elif len(result[i][1]) > 39:
+                        for j in range(2,5):
+                            text_block = {
+                                "type": "text",
+                                "text": "最新消息",
+                                "size": "lg",
+                                "weight": "bold",
+                                "offsetTop": "3px"
+                            }
+                            style1['body']['contents'].insert(j,text_block)
+                        style1['body']['contents'][1]['text'] = result[i][1][:13]
+                        style1['body']['contents'][2]['text'] = result[i][1][13:26]
+                        style1['body']['contents'][3]['text'] = result[i][1][26:39]
+                        style1['body']['contents'][4]['text'] = result[i][1][39:]
+                    elif len(result[i][1]) > 26:
+                        for j in range(2,4):
+                            text_block = {
+                                "type": "text",
+                                "text": "最新消息",
+                                "size": "lg",
+                                "weight": "bold",
+                                "offsetTop": "3px"
+                            }
+                            style1['body']['contents'].insert(j,text_block)
+                        style1['body']['contents'][1]['text'] = result[i][1][:13]
+                        style1['body']['contents'][2]['text'] = result[i][1][13:26]
+                        style1['body']['contents'][3]['text'] = result[i][1][26:]
+                    elif len(result[i][1]) > 13:
+                        for j in range(2,3):
+                            text_block = {
+                                "type": "text",
+                                "text": "最新消息",
+                                "size": "lg",
+                                "weight": "bold",
+                                "offsetTop": "3px"
+                            }
+                            style1['body']['contents'].insert(j,text_block)
+                        style1['body']['contents'][1]['text'] = result[i][1][:13]
+                        style1['body']['contents'][2]['text'] = result[i][1][13:]
+                    else:
+                        style1['body']['contents'][1]['text'] = result[i][1]
+
+                    content['contents'].append(style1)
+
+            line_bot_api.reply_message(event.reply_token, FlexSendMessage(alt_text="目前最新消息",contents=content))
+
+
+            return 0
+
+    if event.postback.data == "聯絡我們":
+        contact_us_flex = {
+            "type": "bubble",
+            "size": "giga",
+            "body": {
+                "type": "box",
+                "layout": "vertical",
+                "contents": [
+                {
+                    "type": "box",
+                    "layout": "horizontal",
+                    "contents": [
+                    {
+                        "type": "image",
+                        "url": "https://imgur.com/1KGFakd.jpg",
+                        "size": "5xl",
+                        "aspectMode": "cover",
+                        "aspectRatio": "150:196",
+                        "gravity": "center",
+                        "flex": 1
+                    },
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://i.imgur.com/pOVQ6Ro.jpg",
+                            "size": "full",
+                            "aspectMode": "cover",
+                            "aspectRatio": "150:98",
+                            "gravity": "center"
+                        },
+                        {
+                            "type": "image",
+                            "url": "https://i.imgur.com/5BiqNjh.jpg",
+                            "size": "full",
+                            "aspectMode": "cover",
+                            "aspectRatio": "150:98",
+                            "gravity": "center"
+                        }
+                        ],
+                        "flex": 1
+                    }
+                    ]
+                },
+                {
+                    "type": "box",
+                    "layout": "horizontal",
+                    "contents": [
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "full"
+                        }
+                        ],
+                        "cornerRadius": "100px",
+                        "width": "72px",
+                        "height": "72px"
+                    },
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "text",
+                            "contents": [
+                            {
+                                "type": "span",
+                                "text": "MB 髮藝",
+                                "weight": "bold",
+                                "color": "#000000",
+                                "size": "lg"
+                            }
+                            ],
+                            "size": "sm"
+                        },
+                        {
+                            "type": "separator",
+                            "margin": "md"
+                        },
+                        {
+                            "type": "text",
+                            "contents": [
+                            {
+                                "type": "span",
+                                "text": "設計師💇🏻‍♀️ 李貞",
+                                "weight": "bold",
+                                "color": "#000000"
+                            }
+                            ],
+                            "size": "sm",
+                            "margin": "md"
+                        },
+                        {
+                            "type": "separator",
+                            "margin": "md"
+                        },
+                        {
+                            "type": "text",
+                            "contents": [
+                            {
+                                "type": "span",
+                                "text": "地址🏡 屏東市中華路431號",
+                                "weight": "bold",
+                                "color": "#000000"
+                            }
+                            ],
+                            "size": "sm",
+                            "margin": "md"
+                        },
+                        {
+                            "type": "separator",
+                            "margin": "md"
+                        },
+                        {
+                            "type": "text",
+                            "contents": [
+                            {
+                                "type": "span",
+                                "text": "聯絡電話 📞 (08)-7366715",
+                                "weight": "bold",
+                                "color": "#000000"
+                            }
+                            ],
+                            "size": "sm",
+                            "margin": "md"
+                        }
+                        ]
+                    }
+                    ],
+                    "spacing": "xl",
+                    "paddingAll": "20px"
+                },
+                {
+                    "type": "box",
+                    "layout": "horizontal",
+                    "contents": [
+                    {
+                        "type": "button",
+                        "action": {
+                        "type": "uri",
+                        "label": "髮妝詢問",
+                        "uri": "https://line.me/ti/p/MY9sqcvY6h"
+                        },
+                        "gravity": "center",
+                        "height": "md",
+                        "flex": 1
+                    },
+                    {
+                        "type": "button",
+                        "action": {
+                        "type": "uri",
+                        "label": "撥打電話",
+                        "uri": "tel://087366715"
+                        },
+                        "height": "md",
+                        "flex": 1,
+                        "gravity": "center"
+                    },
+                    {
+                        "type": "button",
+                        "action": {
+                        "type": "uri",
+                        "label": "開啟導航",
+                        "uri": "https://goo.gl/maps/UusBtgnWjZAMzYhW6"
+                        },
+                        "height": "md",
+                        "flex": 1,
+                        "gravity": "center"
+                    }
+                    ],
+                    "paddingAll": "20px"
+                },
+                {
+                    "type": "spacer"
+                }
+                ],
+                "paddingAll": "0px"
+            }
+            }
+        line_bot_api.reply_message(event.reply_token, FlexSendMessage(
+                alt_text = '聯絡資訊',
+                contents = contact_us_flex ))
+
+        return 0
+
+    if event.postback.data == "預約選項":
+        #DB setting
+        DATABASE_URL = os.environ['DATABASE_URL']
+        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+        cursor = conn.cursor()
+
+
+        # update DB to newest 7 dates
+        theTime = datetime.datetime.now().strftime(ISOTIMEFORMAT)
+        today = str(theTime).split()[0]
+        nowtime = str(theTime).split()[1]
+        sql = "delete from reservation where reser_date < '" + today +"';"
+        cursor.execute(sql)
+        conn.commit()
+
+        #DB update new customer into customer table
+        query = f"""select * from customer where userid = (%s);"""
+        cursor.execute(query,(userID,))
+        conn.commit()
+        if cursor.fetchone() == None:
+            record = (userID,'',userName,'','','',0,'')
+            table_columns = '(userid, service ,name,has_reser1,has_reser2,has_reser3,reser_num,reser_full_data)'
+            postgres_insert_query = f"""INSERT INTO customer {table_columns} VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"""
+            cursor.execute(postgres_insert_query, record)
+            conn.commit()
+        else:
+            sql = "select reser_num from customer where userid = '" +userID + "';"
+            cursor.execute(sql)
+            conn.commit()
+
+            reser_num = cursor.fetchone()[0]
+            if reser_num == 3:
+                line_bot_api.reply_message(event.reply_token, TextSendMessage("最多一次只能預約三個時段喔！😥\n如果要調整時段請到\"預約查詢做調整\""))
+                return 0
+        cursor.close()
+        conn.close()
+
+
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(
+            "請選擇美髮項目💇\n\n" +
+            "剪髮： 30分鐘\n"   +
+            "洗髮： 30分鐘 \n"   +
+            "剪髮 + 洗髮： 1小時\n" +
+            "護髮 + 洗髮： 1小時\n\n"  +
+            "------------------\n\n" +
+            "男生燙髮： 2小時 \n\n " +
+            "女生燙髮： \n" +
+            "短髮： 2小時\n" +
+            "中長髮： 3.5小時\n" +
+            "長髮： 4小時\n\n" +
+            "------------------\n\n" +
+            "男女染髮： \n" +
+            "短髮： 1.5小時\n" +
+            "中長髮： 2小時\n" +
+            "長髮： 2.5小時"
+
+            ,quick_reply=QuickReply(
+                items=[
+                    QuickReplyButton(
+                        action=PostbackAction(label="剪髮"
+                                            , data="剪髮")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="洗髮"
+                                            , data="洗髮")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="剪髮+洗髮"
+                                            , data="剪髮(洗髮)")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="護髮+護髮"
+                                            , data="護髮(洗髮)")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="燙髮(男)"
+                                            , data="燙髮(男)")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="燙髮(女)"
+                                            , data="燙髮(女)")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="染髮"
+                                            , data="染髮")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="染髮+剪髮"
+                                            , data="染髮(剪髮)")
+                    )
+                ]
+        )))
+        return 0
+
+    if event.postback.data == "預約查詢":
+        #DB set
+        DATABASE_URL = os.environ['DATABASE_URL']
+        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+        cursor = conn.cursor()
+
+        #DB update new customer into customer table
+        query = f"""select * from customer where userid = (%s);"""
+        cursor.execute(query,(userID,))
+        conn.commit()
+        if cursor.fetchone() == None:
+            record = (userID,'',userName,'','','',0,'')
+            table_columns = '(userid, service ,name,has_reser1,has_reser2,has_reser3,reser_num,reser_full_data)'
+            postgres_insert_query = f"""INSERT INTO customer {table_columns} VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"""
+            cursor.execute(postgres_insert_query, record)
+            conn.commit()
+
+        sql = "select reser_num from customer where userid = '" +userID + "';"
+        cursor.execute(sql)
+        conn.commit()
+        reser_num = int(cursor.fetchone()[0])
+        if reser_num == 0:
+            line_bot_api.reply_message(event.reply_token, TextSendMessage("目前沒有預約紀錄唷💇"))
+            return 0
+
+        #取 has_reser_list
+        has_reser_list = []
+        for i in range(3):
+            sql = "select has_reser"+ str(i+1) + " from customer where userid = '" + userID + "';"
+            cursor.execute(sql)
+            conn.commit()
+            result = cursor.fetchone()[0]
+            if result != '':
+                has_reser_list.append(result)
+
+
+        #檢查 has_reser日期 有沒有大於今天日期 若沒有 刪掉
+        theTime = datetime.datetime.now().strftime(ISOTIMEFORMAT)
+        today = str(theTime).split()[0]
+        nowtime = str(theTime).split()[1]
+
+        re_write_into_has_reser = []
+        for i in range(len(has_reser_list)):
+            date = has_reser_list[i].split('#')[0].split()[0]
+            time = has_reser_list[i].split('#')[1].split('-')[1]
+            if today > date:
+                reser_num-=1
+                sql = "update customer set has_reser" + str(i+1) + " = '' where userid = '" + userID +"';"
+                cursor.execute(sql)
+                conn.commit()
+                continue
+            if today == date:
+                if nowtime > time:
+                    reser_num-=1
+                    sql = "update customer set has_reser" + str(i+1) + " = '' where userid = '" + userID +"';"
+                    cursor.execute(sql)
+                    conn.commit()
+                    continue
+            re_write_into_has_reser.append(has_reser_list[i])
+
+
+        #先清空 再 rewrite
+        for i in range(3):
+            sql = sql = "update customer set has_reser" + str(i+1) + " = '' where userid = '" + userID +"';"
+            cursor.execute(sql)
+            conn.commit()
+
+        # rewrite into customer
+        if reser_num > 0 :
+            #rewrite data an update reser_num
+            sql = "update customer set reser_num = " + str(reser_num) + " where userid = '" + userID +"';"
+            cursor.execute(sql)
+            conn.commit()
+
+            for i in range(len(re_write_into_has_reser)):
+                sql = "update customer set has_reser" + str(i+1) + " = '" + re_write_into_has_reser[i] + "' where userid = '" + userID +"';"
+                cursor.execute(sql)
+                conn.commit()
+        # 沒有紀錄就 return 0
+        else:
+            sql = "update customer set reser_num = 0 where userid = '" + userID +"';"
+            cursor.execute(sql)
+            conn.commit()
+            line_bot_api.reply_message(event.reply_token, TextSendMessage("目前沒有預約紀錄"))
+            return 0
+
+
+
+        search_reservation = {
+            "type": "carousel",
+            "contents": [
+            ]
+        }
+
+        # 被 apprnd 的 item 必須在for 裡面初始化 ，否則append進去item 的都會參考同一個位置
+        for i in range(len(re_write_into_has_reser)):
+            research_data = {
+                "type": "bubble",
+                "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                    {
+                        "type": "text",
+                        "text": "預約紀錄",
+                        "weight": "bold",
+                        "color": "#1DB446",
+                        "size": "xl",
+                        "gravity": "center",
+                        "align": "center"
+                    },
+                    {
+                        "type": "separator",
+                        "margin": "lg"
+                    },
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "margin": "xxl",
+                        "spacing": "sm",
+                        "contents": [
+                        {
+                            "type": "box",
+                            "layout": "horizontal",
+                            "contents": [
+                            {
+                                "type": "text",
+                                "text": "預約日期",
+                                "size": "lg",
+                                "color": "#555555",
+                                "flex": 0
+                            },
+                            {
+                                "type": "text",
+                                "text": "05-18 (三)",
+                                "size": "lg",
+                                "color": "#111111",
+                                "align": "end"
+                            }
+                            ]
+                        },
+                        {
+                            "type": "box",
+                            "layout": "horizontal",
+                            "contents": [
+                            {
+                                "type": "text",
+                                "text": "預約時間",
+                                "size": "lg",
+                                "color": "#555555",
+                                "flex": 0
+                            },
+                            {
+                                "type": "text",
+                                "text": "14:00-15:00",
+                                "size": "lg",
+                                "color": "#111111",
+                                "align": "end"
+                            }
+                            ]
+                        },
+                        {
+                            "type": "box",
+                            "layout": "horizontal",
+                            "contents": [
+                            {
+                                "type": "text",
+                                "text": "美髮項目",
+                                "size": "lg",
+                                "color": "#555555",
+                                "flex": 0
+                            },
+                            {
+                                "type": "text",
+                                "text": "燙髮",
+                                "size": "lg",
+                                "color": "#111111",
+                                "align": "end"
+                            }
+                            ]
+                        }
+                        ]
+                    },
+                    {
+                        "type": "button",
+                        "action": {
+                        "type": "postback",
+                        "label": "刪除預約",
+                        "data": "刪除預約"
+                        },
+                        "style": "primary",
+                        "margin": "md"
+                    }
+                    ]
+                }
+            }
+            search_reservation['contents'].append(research_data)
+
+
+        for i in range(len(re_write_into_has_reser)):
+            write_date = re_write_into_has_reser[i].split('#')[0]
+            write_time = re_write_into_has_reser[i].split('#')[1]
+            write_service = re_write_into_has_reser[i].split('#')[2]
+            search_reservation['contents'][i]['body']['contents'][2]['contents'][0]['contents'][1]['text'] = write_date
+            search_reservation['contents'][i]['body']['contents'][2]['contents'][1]['contents'][1]['text'] = write_time
+            search_reservation['contents'][i]['body']['contents'][2]['contents'][2]['contents'][1]['text'] = write_service
+
+            write_in_date = write_date.split()[0]
+            write_in_time1_index = time_table.index(write_time.split('-')[0])
+            write_in_time2_index = time_table.index(write_time.split('-')[1])
+
+            write_in_data = str(write_in_date) + ' ' + str(write_in_time1_index) + ' ' + str(write_in_time2_index)
+            search_reservation['contents'][i]['body']['contents'][3]['action']['data'] = '刪除預約 ' + write_in_data + ' ' + str(i+1)
+
+        line_bot_api.reply_message(event.reply_token, FlexSendMessage(
+                alt_text = '預約查詢結果',
+                contents = search_reservation ))
+
+
+        cursor.close()
+        conn.close()
+
+        return 0
+
 
     if event.postback.data == "作品集管理":
         line_bot_api.reply_message(event.reply_token, TextSendMessage("作品集管理"
@@ -318,6 +1169,27 @@ def reply_postback(event):
         return 0
 
     if event.postback.data == "女生燙髮":
+        line_bot_api.reply_message(event.reply_token, TextSendMessage("分類至『長髮』 or 『中長髮』 or 『短髮』"
+            ,quick_reply=QuickReply(
+                items=[
+                    QuickReplyButton(
+                        action=PostbackAction(label="長髮"
+                                            , data="女生長燙髮")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="中長髮"
+                                            , data="女生中長燙髮")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="短髮"
+                                            , data="女生短燙髮")
+                    )
+                ]
+        )))
+
+        return 0
+
+    if event.postback.data == "女生長燙髮":
         line_bot_api.reply_message(event.reply_token, TextSendMessage("已新增至作品集。"))
 
         DATABASE_URL = os.environ['DATABASE_URL']
@@ -331,10 +1203,66 @@ def reply_postback(event):
         img_list = cursor.fetchone()
 
         # update to the portfolio
-        table_columns = '(add_date,pic_1,pic_2,pic_3,pic_4)'
-        sql = f"""insert into perm_male {table_columns} values (%s,%s,%s,%s,%s)"""
+        table_columns = '(add_date,pic_1,pic_2,pic_3,pic_4,lenth)'
+        sql = f"""insert into perm_male {table_columns} values (%s,%s,%s,%s,%s,%s)"""
         date = (datetime.datetime.now()+datetime.timedelta(days=0)).strftime("%m-%d")
-        cursor.execute(sql , (date,img_list[0],img_list[1],img_list[2],img_list[3]))
+        cursor.execute(sql , (date,img_list[0],img_list[1],img_list[2],img_list[3],'l'))
+        conn.commit()
+
+        #reset pic_num ,reset img_url
+        sql = "update manager set status='',pic_num = '0' ,pic_1 = '', pic_2 = '', pic_3 = '' where userid = 'Ue9484510f6a0ba4d68b30d0c759949c9'"
+        cursor.execute(sql)
+        conn.commit()
+
+
+        return 0
+
+    if event.postback.data == "女生中長燙髮":
+        line_bot_api.reply_message(event.reply_token, TextSendMessage("已新增至作品集。"))
+
+        DATABASE_URL = os.environ['DATABASE_URL']
+        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+        cursor = conn.cursor()
+
+        # get the url list
+        sql = "select pic_1,pic_2,pic_3,pic_4 from manager where userid = 'Ue9484510f6a0ba4d68b30d0c759949c9'"
+        cursor.execute(sql)
+        conn.commit()
+        img_list = cursor.fetchone()
+
+        # update to the portfolio
+        table_columns = '(add_date,pic_1,pic_2,pic_3,pic_4,lenth)'
+        sql = f"""insert into perm_male {table_columns} values (%s,%s,%s,%s,%s,%s)"""
+        date = (datetime.datetime.now()+datetime.timedelta(days=0)).strftime("%m-%d")
+        cursor.execute(sql , (date,img_list[0],img_list[1],img_list[2],img_list[3],'m'))
+        conn.commit()
+
+        #reset pic_num ,reset img_url
+        sql = "update manager set status='',pic_num = '0' ,pic_1 = '', pic_2 = '', pic_3 = '' where userid = 'Ue9484510f6a0ba4d68b30d0c759949c9'"
+        cursor.execute(sql)
+        conn.commit()
+
+
+        return 0
+
+    if event.postback.data == "女生短燙髮":
+        line_bot_api.reply_message(event.reply_token, TextSendMessage("已新增至作品集。"))
+
+        DATABASE_URL = os.environ['DATABASE_URL']
+        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+        cursor = conn.cursor()
+
+        # get the url list
+        sql = "select pic_1,pic_2,pic_3,pic_4 from manager where userid = 'Ue9484510f6a0ba4d68b30d0c759949c9'"
+        cursor.execute(sql)
+        conn.commit()
+        img_list = cursor.fetchone()
+
+        # update to the portfolio
+        table_columns = '(add_date,pic_1,pic_2,pic_3,pic_4,lenth)'
+        sql = f"""insert into perm_male {table_columns} values (%s,%s,%s,%s,%s,%s)"""
+        date = (datetime.datetime.now()+datetime.timedelta(days=0)).strftime("%m-%d")
+        cursor.execute(sql , (date,img_list[0],img_list[1],img_list[2],img_list[3],'s'))
         conn.commit()
 
         #reset pic_num ,reset img_url
@@ -647,15 +1575,15 @@ def reply_postback(event):
             ,quick_reply=QuickReply(
                 items=[
                     QuickReplyButton(
-                        action=PostbackAction(label="剪髮作品集"
+                        action=PostbackAction(label="男生剪髮作品集"
                                             , data="男生剪髮作品集")
                     ),
                     QuickReplyButton(
-                        action=PostbackAction(label="染髮作品集"
+                        action=PostbackAction(label="男生染髮作品集"
                                             , data="男生染髮作品集")
                     ),
                     QuickReplyButton(
-                        action=PostbackAction(label="燙髮作品集"
+                        action=PostbackAction(label="男生燙髮作品集"
                                             , data="男生燙髮作品集")
                     )
                 ]
@@ -668,15 +1596,15 @@ def reply_postback(event):
             ,quick_reply=QuickReply(
                 items=[
                     QuickReplyButton(
-                        action=PostbackAction(label="剪髮作品集"
+                        action=PostbackAction(label="女生剪髮作品集"
                                             , data="女生剪髮作品集")
                     ),
                     QuickReplyButton(
-                        action=PostbackAction(label="染髮作品集"
+                        action=PostbackAction(label="女生染髮作品集"
                                             , data="女生染髮作品集")
                     ),
                     QuickReplyButton(
-                        action=PostbackAction(label="燙髮作品集"
+                        action=PostbackAction(label="女生燙髮作品集"
                                             , data="女生燙髮作品集")
                     )
                 ]
@@ -684,13 +1612,14 @@ def reply_postback(event):
 
         return 0
 
+# host look up
     if event.postback.data == "男生剪髮作品集":
         #DB set
         DATABASE_URL = os.environ['DATABASE_URL']
         conn = psycopg2.connect(DATABASE_URL, sslmode='require')
         cursor = conn.cursor()
 
-        sql = "select * from cut_man order by add_date DESC"
+        sql = "select * from cut_man order by id DESC"
         cursor.execute(sql)
         conn.commit()
 
@@ -889,7 +1818,23 @@ def reply_postback(event):
                 style1['body']['contents'][0]['contents'][0]['url'] = result[i][2]
 
                 content['contents'].append(style1)
-        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="男生剪髮作品集",contents=content))
+        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="男生剪髮作品集",contents=content
+        ,quick_reply=QuickReply(
+                items=[
+                    QuickReplyButton(
+                        action=PostbackAction(label="男生剪髮作品集"
+                                            , data="男生剪髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="男生染髮作品集"
+                                            , data="男生染髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="男生燙髮作品集"
+                                            , data="男生燙髮作品集")
+                    )
+                ]
+        )))
 
         return 0
 
@@ -900,7 +1845,7 @@ def reply_postback(event):
         conn = psycopg2.connect(DATABASE_URL, sslmode='require')
         cursor = conn.cursor()
 
-        sql = "select * from dye_man order by add_date DESC"
+        sql = "select * from dye_man order by id DESC"
         cursor.execute(sql)
         conn.commit()
 
@@ -1100,7 +2045,23 @@ def reply_postback(event):
 
                 content['contents'].append(style1)
 
-        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="男生染髮作品集",contents=content))
+        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="男生染髮作品集",contents=content
+        ,quick_reply=QuickReply(
+                items=[
+                    QuickReplyButton(
+                        action=PostbackAction(label="男生剪髮作品集"
+                                            , data="男生剪髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="男生染髮作品集"
+                                            , data="男生染髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="男生燙髮作品集"
+                                            , data="男生燙髮作品集")
+                    )
+                ]
+        )))
 
         return 0
 
@@ -1110,7 +2071,7 @@ def reply_postback(event):
         conn = psycopg2.connect(DATABASE_URL, sslmode='require')
         cursor = conn.cursor()
 
-        sql = "select * from perm_man order by add_date DESC"
+        sql = "select * from perm_man order by id DESC"
         cursor.execute(sql)
         conn.commit()
 
@@ -1309,7 +2270,23 @@ def reply_postback(event):
 
                 content['contents'].append(style1)
 
-        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="男生燙髮作品集",contents=content))
+        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="男生燙髮作品集",contents=content
+        ,quick_reply=QuickReply(
+                items=[
+                    QuickReplyButton(
+                        action=PostbackAction(label="男生剪髮作品集"
+                                            , data="男生剪髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="男生染髮作品集"
+                                            , data="男生染髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="男生燙髮作品集"
+                                            , data="男生燙髮作品集")
+                    )
+                ]
+        )))
 
         return 0
 
@@ -1319,7 +2296,7 @@ def reply_postback(event):
         conn = psycopg2.connect(DATABASE_URL, sslmode='require')
         cursor = conn.cursor()
 
-        sql = "select * from cut_male order by add_date DESC"
+        sql = "select * from cut_male order by id DESC"
         cursor.execute(sql)
         conn.commit()
 
@@ -1518,7 +2495,23 @@ def reply_postback(event):
 
                 content['contents'].append(style1)
 
-        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="女生剪髮作品集",contents=content))
+        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="女生剪髮作品集",contents=content
+        ,quick_reply=QuickReply(
+                items=[
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生剪髮作品集"
+                                            , data="女生剪髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生染髮作品集"
+                                            , data="女生染髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生燙髮作品集"
+                                            , data="女生燙髮作品集")
+                    )
+                ]
+        )))
 
         return 0
 
@@ -1528,7 +2521,7 @@ def reply_postback(event):
         conn = psycopg2.connect(DATABASE_URL, sslmode='require')
         cursor = conn.cursor()
 
-        sql = "select * from dye_male order by add_date DESC"
+        sql = "select * from dye_male order by id DESC"
         cursor.execute(sql)
         conn.commit()
 
@@ -1727,17 +2720,54 @@ def reply_postback(event):
 
                 content['contents'].append(style1)
 
-        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="女生染髮作品集",contents=content))
+        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="女生染髮作品集",contents=content
+        ,quick_reply=QuickReply(
+                items=[
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生剪髮作品集"
+                                            , data="女生剪髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生染髮作品集"
+                                            , data="女生染髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生燙髮作品集"
+                                            , data="女生燙髮作品集")
+                    )
+                ]
+        )))
 
         return 0
 
     if event.postback.data == "女生燙髮作品集":
+        line_bot_api.reply_message(event.reply_token, TextSendMessage("選擇『長髮』 or 『中長髮』 or 『短髮』"
+            ,quick_reply=QuickReply(
+                items=[
+                    QuickReplyButton(
+                        action=PostbackAction(label="長髮"
+                                            , data="女生長燙髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="中長髮"
+                                            , data="女生中長燙髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="短髮"
+                                            , data="女生短燙髮作品集")
+                    )
+                ]
+        )))
+
+        return 0
+
+    if event.postback.data == "女生長燙髮作品集":
         #DB set
         DATABASE_URL = os.environ['DATABASE_URL']
         conn = psycopg2.connect(DATABASE_URL, sslmode='require')
         cursor = conn.cursor()
 
-        sql = "select * from perm_male order by add_date DESC"
+        sql = "select * from perm_male where lenth = 'l' order by id DESC"
         cursor.execute(sql)
         conn.commit()
 
@@ -1936,19 +2966,484 @@ def reply_postback(event):
 
                 content['contents'].append(style1)
 
-        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="女生燙髮作品集",contents=content))
+        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="女生燙髮作品集",contents=content
+        ,quick_reply=QuickReply(
+                items=[
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生剪髮作品集"
+                                            , data="女生剪髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生染髮作品集"
+                                            , data="女生染髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生燙髮作品集"
+                                            , data="女生燙髮作品集")
+                    )
+                ]
+        )))
 
         return 0
 
+    if event.postback.data == "女生中長燙髮作品集":
+        #DB set
+        DATABASE_URL = os.environ['DATABASE_URL']
+        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+        cursor = conn.cursor()
 
+        sql = "select * from perm_male where lenth = 'm' order by id DESC"
+        cursor.execute(sql)
+        conn.commit()
 
+        result = cursor.fetchall()
+        if not result:
+            line_bot_api.reply_message(event.reply_token, TextSendMessage("目前沒有作品"))
+            return 0
+
+        content = {
+            "type": "carousel",
+            "contents": [
+            ]
+        }
+
+        max_num = len(result)
+        if max_num > 10:
+            max_num = 10
+
+        for i in range(max_num):
+            style1 = {
+                "type": "bubble",
+                "size": "giga",
+                "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "full",
+                            "aspectRatio": "50:100"
+                        }
+                        ]
+                    },
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "button",
+                            "action": {
+                            "type": "postback",
+                            "label": "刪除",
+                            "data": "刪除作品集#perm_male#"
+                            },
+                            "style": "primary",
+                            "height": "md",
+                            "offsetBottom": "10px"
+                        }
+                        ],
+                        "offsetTop": "10px",
+                        "paddingAll": "10px"
+                    }
+                    ],
+                    "paddingAll": "10px"
+                }
+            }
+
+            style2 = {
+                "type": "bubble",
+                "size": "giga",
+                "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "full",
+                            "aspectRatio": "100:100"
+                        },
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "full",
+                            "aspectRatio": "100:100"
+                        }
+                        ]
+                    },
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "button",
+                            "action": {
+                            "type": "postback",
+                            "label": "刪除",
+                            "data": "刪除作品集#perm_male#"
+                            },
+                            "style": "primary",
+                            "height": "md",
+                            "offsetBottom": "10px"
+                        }
+                        ],
+                        "offsetTop": "10px",
+                        "paddingAll": "10px"
+                    }
+                    ],
+                    "paddingAll": "10px"
+                }
+            }
+
+            style3 = {
+                "type": "bubble",
+                "size": "giga",
+                "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "full"
+                        }
+                        ],
+                        "cornerRadius": "200px"
+                    },
+                    {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "5xl",
+                            "aspectRatio": "150:300"
+                        },
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "5xl",
+                            "aspectRatio": "150:300"
+                        }
+                        ]
+                    },
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "button",
+                            "action": {
+                            "type": "postback",
+                            "label": "刪除",
+                            "data": "刪除作品集#perm_male#"
+                            },
+                            "style": "primary",
+                            "height": "md",
+                            "offsetBottom": "10px"
+                        }
+                        ],
+                        "offsetTop": "10px",
+                        "paddingAll": "10px"
+                    }
+                    ],
+                    "paddingAll": "10px"
+                }
+            }
+
+            if result[i][4]!= "":
+                style3['body']['contents'][2]['contents'][0]['action']['data'] += str(result[i][0])
+                style3['body']['contents'][0]['contents'][0]['url'] = result[i][2]
+                style3['body']['contents'][1]['contents'][0]['url'] = result[i][3]
+                style3['body']['contents'][1]['contents'][1]['url'] = result[i][4]
+
+                content['contents'].append(style3)
+            elif result[i][3] != "":
+                style2['body']['contents'][1]['contents'][0]['action']['data'] += str(result[i][0])
+                style2['body']['contents'][0]['contents'][0]['url'] = result[i][2]
+                style2['body']['contents'][0]['contents'][1]['url'] = result[i][3]
+
+                content['contents'].append(style2)
+
+            else:
+                style1['body']['contents'][1]['contents'][0]['action']['data'] += str(result[i][0])
+                style1['body']['contents'][0]['contents'][0]['url'] = result[i][2]
+
+                content['contents'].append(style1)
+
+        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="女生燙髮作品集",contents=content
+        ,quick_reply=QuickReply(
+                items=[
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生剪髮作品集"
+                                            , data="女生剪髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生染髮作品集"
+                                            , data="女生染髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生燙髮作品集"
+                                            , data="女生燙髮作品集")
+                    )
+                ]
+        )))
+
+        return 0
+
+    if event.postback.data == "女生短燙髮作品集":
+        #DB set
+        DATABASE_URL = os.environ['DATABASE_URL']
+        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+        cursor = conn.cursor()
+
+        sql = "select * from perm_male where lenth = 's' order by id DESC"
+        cursor.execute(sql)
+        conn.commit()
+
+        result = cursor.fetchall()
+        if not result:
+            line_bot_api.reply_message(event.reply_token, TextSendMessage("目前沒有作品"))
+            return 0
+
+        content = {
+            "type": "carousel",
+            "contents": [
+            ]
+        }
+
+        max_num = len(result)
+        if max_num > 10:
+            max_num = 10
+
+        for i in range(max_num):
+            style1 = {
+                "type": "bubble",
+                "size": "giga",
+                "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "full",
+                            "aspectRatio": "50:100"
+                        }
+                        ]
+                    },
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "button",
+                            "action": {
+                            "type": "postback",
+                            "label": "刪除",
+                            "data": "刪除作品集#perm_male#"
+                            },
+                            "style": "primary",
+                            "height": "md",
+                            "offsetBottom": "10px"
+                        }
+                        ],
+                        "offsetTop": "10px",
+                        "paddingAll": "10px"
+                    }
+                    ],
+                    "paddingAll": "10px"
+                }
+            }
+
+            style2 = {
+                "type": "bubble",
+                "size": "giga",
+                "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "full",
+                            "aspectRatio": "100:100"
+                        },
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "full",
+                            "aspectRatio": "100:100"
+                        }
+                        ]
+                    },
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "button",
+                            "action": {
+                            "type": "postback",
+                            "label": "刪除",
+                            "data": "刪除作品集#perm_male#"
+                            },
+                            "style": "primary",
+                            "height": "md",
+                            "offsetBottom": "10px"
+                        }
+                        ],
+                        "offsetTop": "10px",
+                        "paddingAll": "10px"
+                    }
+                    ],
+                    "paddingAll": "10px"
+                }
+            }
+
+            style3 = {
+                "type": "bubble",
+                "size": "giga",
+                "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "full"
+                        }
+                        ],
+                        "cornerRadius": "200px"
+                    },
+                    {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "5xl",
+                            "aspectRatio": "150:300"
+                        },
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "5xl",
+                            "aspectRatio": "150:300"
+                        }
+                        ]
+                    },
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "button",
+                            "action": {
+                            "type": "postback",
+                            "label": "刪除",
+                            "data": "刪除作品集#perm_male#"
+                            },
+                            "style": "primary",
+                            "height": "md",
+                            "offsetBottom": "10px"
+                        }
+                        ],
+                        "offsetTop": "10px",
+                        "paddingAll": "10px"
+                    }
+                    ],
+                    "paddingAll": "10px"
+                }
+            }
+
+            if result[i][4]!= "":
+                style3['body']['contents'][2]['contents'][0]['action']['data'] += str(result[i][0])
+                style3['body']['contents'][0]['contents'][0]['url'] = result[i][2]
+                style3['body']['contents'][1]['contents'][0]['url'] = result[i][3]
+                style3['body']['contents'][1]['contents'][1]['url'] = result[i][4]
+
+                content['contents'].append(style3)
+            elif result[i][3] != "":
+                style2['body']['contents'][1]['contents'][0]['action']['data'] += str(result[i][0])
+                style2['body']['contents'][0]['contents'][0]['url'] = result[i][2]
+                style2['body']['contents'][0]['contents'][1]['url'] = result[i][3]
+
+                content['contents'].append(style2)
+
+            else:
+                style1['body']['contents'][1]['contents'][0]['action']['data'] += str(result[i][0])
+                style1['body']['contents'][0]['contents'][0]['url'] = result[i][2]
+
+                content['contents'].append(style1)
+
+        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="女生燙髮作品集",contents=content
+        ,quick_reply=QuickReply(
+                items=[
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生剪髮作品集"
+                                            , data="女生剪髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生染髮作品集"
+                                            , data="女生染髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生燙髮作品集"
+                                            , data="女生燙髮作品集")
+                    )
+                ]
+        )))
+
+        return 0
+
+# guest look up
     if event.postback.data == "查看男生剪髮作品集":
         #DB set
         DATABASE_URL = os.environ['DATABASE_URL']
         conn = psycopg2.connect(DATABASE_URL, sslmode='require')
         cursor = conn.cursor()
 
-        sql = "select * from cut_man order by add_date DESC"
+        sql = "select * from cut_man order by id DESC"
         cursor.execute(sql)
         conn.commit()
 
@@ -2087,7 +3582,23 @@ def reply_postback(event):
 
                 content['contents'].append(style1)
 
-        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="男生剪髮作品集",contents=content))
+        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="男生剪髮作品集",contents=content
+        ,quick_reply=QuickReply(
+                items=[
+                    QuickReplyButton(
+                        action=PostbackAction(label="男生剪髮作品集"
+                                            , data="查看男生剪髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="男生染髮作品集"
+                                            , data="查看男生染髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="男生燙髮作品集"
+                                            , data="查看男生燙髮作品集")
+                    )
+                ]
+        )))
 
         return 0
 
@@ -2098,7 +3609,7 @@ def reply_postback(event):
         conn = psycopg2.connect(DATABASE_URL, sslmode='require')
         cursor = conn.cursor()
 
-        sql = "select * from dye_man order by add_date DESC"
+        sql = "select * from dye_man order by id DESC"
         cursor.execute(sql)
         conn.commit()
 
@@ -2237,7 +3748,23 @@ def reply_postback(event):
 
                 content['contents'].append(style1)
 
-        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="男生染髮作品集",contents=content))
+        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="男生染髮作品集",contents=content
+        ,quick_reply=QuickReply(
+                items=[
+                    QuickReplyButton(
+                        action=PostbackAction(label="男生剪髮作品集"
+                                            , data="查看男生剪髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="男生染髮作品集"
+                                            , data="查看男生染髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="男生燙髮作品集"
+                                            , data="查看男生燙髮作品集")
+                    )
+                ]
+        )))
 
         return 0
 
@@ -2247,7 +3774,7 @@ def reply_postback(event):
         conn = psycopg2.connect(DATABASE_URL, sslmode='require')
         cursor = conn.cursor()
 
-        sql = "select * from perm_man order by add_date DESC"
+        sql = "select * from perm_man order by id DESC"
         cursor.execute(sql)
         conn.commit()
 
@@ -2386,7 +3913,23 @@ def reply_postback(event):
 
                 content['contents'].append(style1)
 
-        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="男生燙髮作品集",contents=content))
+        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="男生燙髮作品集",contents=content
+        ,quick_reply=QuickReply(
+                items=[
+                    QuickReplyButton(
+                        action=PostbackAction(label="男生剪髮作品集"
+                                            , data="查看男生剪髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="男生染髮作品集"
+                                            , data="查看男生染髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="男生燙髮作品集"
+                                            , data="查看男生燙髮作品集")
+                    )
+                ]
+        )))
 
         return 0
 
@@ -2396,7 +3939,7 @@ def reply_postback(event):
         conn = psycopg2.connect(DATABASE_URL, sslmode='require')
         cursor = conn.cursor()
 
-        sql = "select * from cut_male order by add_date DESC"
+        sql = "select * from cut_male order by id DESC"
         cursor.execute(sql)
         conn.commit()
 
@@ -2535,7 +4078,23 @@ def reply_postback(event):
 
                 content['contents'].append(style1)
 
-        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="女生剪髮作品集",contents=content))
+        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="女生剪髮作品集",contents=content
+        ,quick_reply=QuickReply(
+                items=[
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生剪髮作品集"
+                                            , data="查看女生剪髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生染髮作品集"
+                                            , data="查看女生染髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生燙髮作品集"
+                                            , data="查看女生燙髮作品集")
+                    )
+                ]
+        )))
 
         return 0
 
@@ -2545,7 +4104,7 @@ def reply_postback(event):
         conn = psycopg2.connect(DATABASE_URL, sslmode='require')
         cursor = conn.cursor()
 
-        sql = "select * from dye_male order by add_date DESC"
+        sql = "select * from dye_male order by id DESC"
         cursor.execute(sql)
         conn.commit()
 
@@ -2684,17 +4243,54 @@ def reply_postback(event):
 
                 content['contents'].append(style1)
 
-        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="女生染髮作品集",contents=content))
+        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="女生染髮作品集",contents=content
+        ,quick_reply=QuickReply(
+                items=[
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生剪髮作品集"
+                                            , data="查看女生剪髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生染髮作品集"
+                                            , data="查看女生染髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生燙髮作品集"
+                                            , data="查看女生燙髮作品集")
+                    )
+                ]
+        )))
 
         return 0
 
     if event.postback.data == "查看女生燙髮作品集":
+        line_bot_api.reply_message(event.reply_token, TextSendMessage("選擇『長髮』 or 『中長髮』 or 『短髮』"
+            ,quick_reply=QuickReply(
+                items=[
+                    QuickReplyButton(
+                        action=PostbackAction(label="長髮"
+                                            , data="查看女生長燙髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="中長髮"
+                                            , data="查看女生中長燙髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="短髮"
+                                            , data="查看女生短燙髮作品集")
+                    )
+                ]
+        )))
+
+        return 0
+
+    if event.postback.data == "查看女生長燙髮作品集":
         #DB set
         DATABASE_URL = os.environ['DATABASE_URL']
         conn = psycopg2.connect(DATABASE_URL, sslmode='require')
         cursor = conn.cursor()
 
-        sql = "select * from perm_male order by add_date DESC"
+        sql = "select * from perm_male where lenth = 'l' order by id DESC"
         cursor.execute(sql)
         conn.commit()
 
@@ -2833,7 +4429,353 @@ def reply_postback(event):
 
                 content['contents'].append(style1)
 
-        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="女生燙髮作品集",contents=content))
+        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="女生燙髮作品集",contents=content
+        ,quick_reply=QuickReply(
+                items=[
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生剪髮作品集"
+                                            , data="查看女生剪髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生染髮作品集"
+                                            , data="查看女生染髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生燙髮作品集"
+                                            , data="查看女生燙髮作品集")
+                    )
+                ]
+        )))
+
+        return 0
+
+    if event.postback.data == "查看女生中長燙髮作品集":
+        #DB set
+        DATABASE_URL = os.environ['DATABASE_URL']
+        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+        cursor = conn.cursor()
+
+        sql = "select * from perm_male where lenth = 'm' order by id DESC"
+        cursor.execute(sql)
+        conn.commit()
+
+        result = cursor.fetchall()
+        if not result:
+            line_bot_api.reply_message(event.reply_token, TextSendMessage("目前沒有作品"))
+            return 0
+
+        content = {
+            "type": "carousel",
+            "contents": [
+            ]
+        }
+
+        max_num = len(result)
+        if max_num > 10:
+            max_num = 10
+
+        for i in range(max_num):
+            style1 = {
+                "type": "bubble",
+                "size": "giga",
+                "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "full",
+                            "aspectRatio": "50:100"
+                        }
+                        ]
+                    }
+                    ],
+                    "paddingAll": "10px"
+                }
+            }
+
+            style2 = {
+                "type": "bubble",
+                "size": "giga",
+                "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "full",
+                            "aspectRatio": "100:100"
+                        },
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "full",
+                            "aspectRatio": "100:100"
+                        }
+                        ]
+                    }
+                    ],
+                    "paddingAll": "10px"
+                }
+            }
+
+            style3 = {
+                "type": "bubble",
+                "size": "giga",
+                "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "full"
+                        }
+                        ],
+                        "cornerRadius": "200px"
+                    },
+                    {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "5xl",
+                            "aspectRatio": "150:300"
+                        },
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "5xl",
+                            "aspectRatio": "150:300"
+                        }
+                        ]
+                    }
+                    ],
+                    "paddingAll": "10px"
+                }
+            }
+
+            if result[i][4]!= "":
+                style3['body']['contents'][0]['contents'][0]['url'] = result[i][2]
+                style3['body']['contents'][1]['contents'][0]['url'] = result[i][3]
+                style3['body']['contents'][1]['contents'][1]['url'] = result[i][4]
+
+                content['contents'].append(style3)
+            elif result[i][3] != "":
+                style2['body']['contents'][0]['contents'][0]['url'] = result[i][2]
+                style2['body']['contents'][0]['contents'][1]['url'] = result[i][3]
+
+                content['contents'].append(style2)
+
+            else:
+                style1['body']['contents'][0]['contents'][0]['url'] = result[i][2]
+
+                content['contents'].append(style1)
+
+        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="女生燙髮作品集",contents=content
+        ,quick_reply=QuickReply(
+                items=[
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生剪髮作品集"
+                                            , data="查看女生剪髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生染髮作品集"
+                                            , data="查看女生染髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生燙髮作品集"
+                                            , data="查看女生燙髮作品集")
+                    )
+                ]
+        )))
+
+        return 0
+
+    if event.postback.data == "查看女生短燙髮作品集":
+        #DB set
+        DATABASE_URL = os.environ['DATABASE_URL']
+        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+        cursor = conn.cursor()
+
+        sql = "select * from perm_male where lenth = 's' order by id DESC"
+        cursor.execute(sql)
+        conn.commit()
+
+        result = cursor.fetchall()
+        if not result:
+            line_bot_api.reply_message(event.reply_token, TextSendMessage("目前沒有作品"))
+            return 0
+
+        content = {
+            "type": "carousel",
+            "contents": [
+            ]
+        }
+
+        max_num = len(result)
+        if max_num > 10:
+            max_num = 10
+
+        for i in range(max_num):
+            style1 = {
+                "type": "bubble",
+                "size": "giga",
+                "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "full",
+                            "aspectRatio": "50:100"
+                        }
+                        ]
+                    }
+                    ],
+                    "paddingAll": "10px"
+                }
+            }
+
+            style2 = {
+                "type": "bubble",
+                "size": "giga",
+                "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "full",
+                            "aspectRatio": "100:100"
+                        },
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "full",
+                            "aspectRatio": "100:100"
+                        }
+                        ]
+                    }
+                    ],
+                    "paddingAll": "10px"
+                }
+            }
+
+            style3 = {
+                "type": "bubble",
+                "size": "giga",
+                "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "full"
+                        }
+                        ],
+                        "cornerRadius": "200px"
+                    },
+                    {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "5xl",
+                            "aspectRatio": "150:300"
+                        },
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "5xl",
+                            "aspectRatio": "150:300"
+                        }
+                        ]
+                    }
+                    ],
+                    "paddingAll": "10px"
+                }
+            }
+
+            if result[i][4]!= "":
+                style3['body']['contents'][0]['contents'][0]['url'] = result[i][2]
+                style3['body']['contents'][1]['contents'][0]['url'] = result[i][3]
+                style3['body']['contents'][1]['contents'][1]['url'] = result[i][4]
+
+                content['contents'].append(style3)
+            elif result[i][3] != "":
+                style2['body']['contents'][0]['contents'][0]['url'] = result[i][2]
+                style2['body']['contents'][0]['contents'][1]['url'] = result[i][3]
+
+                content['contents'].append(style2)
+
+            else:
+                style1['body']['contents'][0]['contents'][0]['url'] = result[i][2]
+
+                content['contents'].append(style1)
+
+        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="女生燙髮作品集",contents=content
+        ,quick_reply=QuickReply(
+                items=[
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生剪髮作品集"
+                                            , data="查看女生剪髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生染髮作品集"
+                                            , data="查看女生染髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生燙髮作品集"
+                                            , data="查看女生燙髮作品集")
+                    )
+                ]
+        )))
 
         return 0
 
@@ -2841,13 +4783,15 @@ def reply_postback(event):
         table = event.postback.data.split('#')[1]
         data_id = event.postback.data.split('#')[2]
 
-        line_bot_api.reply_message(event.reply_token , TextSendMessage('已刪除該作品。'))
+        if table == 'news_table':
+            line_bot_api.reply_message(event.reply_token , TextSendMessage('已刪除這則最新消息。'))
+        else:
+            line_bot_api.reply_message(event.reply_token , TextSendMessage('已刪除該作品。'))
         #DB set
         DATABASE_URL = os.environ['DATABASE_URL']
         conn = psycopg2.connect(DATABASE_URL, sslmode='require')
         cursor = conn.cursor()
 
-        #清空manager status
         sql = "delete from " + table + " where id = '" + data_id + "'"
         cursor.execute(sql)
         conn.commit()
@@ -2884,12 +4828,12 @@ def reply_postback(event):
                                 quick_reply=QuickReply(
                                     items=[
                                         QuickReplyButton(
-                                            action=DatetimePickerAction(label="休息日",
+                                            action=DatetimePickerAction(label="設定休息日",
                                                                         data="設定休息日",
                                                                         mode="date")
                                         ),
                                         QuickReplyButton(
-                                            action=DatetimePickerAction(label="今日下班時間",
+                                            action=DatetimePickerAction(label="設定今日下班時間",
                                                                         data="設定下班時間",
                                                                         mode="time",
                                                                         initial= "09:00",
@@ -2910,37 +4854,6 @@ def reply_postback(event):
 
         return 0
 
-    if event.postback.data == "刪除最新消息":
-        line_bot_api.reply_message(event.reply_token , TextSendMessage('已刪除最新消息。'))
-        #DB set
-        DATABASE_URL = os.environ['DATABASE_URL']
-        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
-        cursor = conn.cursor()
-
-        #清空manager status
-        sql = "update manager set news = '' where userid = 'Ue9484510f6a0ba4d68b30d0c759949c9'"
-        cursor.execute(sql)
-        conn.commit()
-
-        return 0
-
-    if event.postback.data == "設定最新消息(文字)":
-        # reply text
-        line_bot_api.reply_message(event.reply_token, TextSendMessage("請輸入要告訴客人的最新消息😄"))
-        # set manager status
-        #DB setting
-        DATABASE_URL = os.environ['DATABASE_URL']
-        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
-        cursor = conn.cursor()
-
-        sql = "update manager set status = '輸入最新消息' where userid = 'Ue9484510f6a0ba4d68b30d0c759949c9'"
-        cursor.execute(sql)
-        conn.commit()
-
-        cursor.close()
-        conn.close()
-
-        return 0
 
     if event.postback.data == "設定最新消息(一張圖片)":
         line_bot_api.reply_message(event.reply_token, TextSendMessage("請先上傳一張圖片"))
@@ -2951,8 +4864,7 @@ def reply_postback(event):
         cursor = conn.cursor()
 
         #reset pic_num ,reset img_url
-        #reset pic_num ,reset img_url
-        sql = "update manager set status='',pic_num = '0' ,pic_1 = '', pic_2 = '', pic_3 = '',news_p1 = '', news_p2 = '' where userid = 'Ue9484510f6a0ba4d68b30d0c759949c9'"
+        sql = "update manager set status='',pic_num = '0' ,pic_1 = '', pic_2 = '', pic_3 = '' where userid = 'Ue9484510f6a0ba4d68b30d0c759949c9'"
         cursor.execute(sql)
         conn.commit()
 
@@ -2975,7 +4887,7 @@ def reply_postback(event):
 
         #init
         #reset pic_num ,reset img_url
-        sql = "update manager set status='',pic_num = '0' ,pic_1 = '', pic_2 = '', pic_3 = '',news_p1 = '', news_p2 = '' where userid = 'Ue9484510f6a0ba4d68b30d0c759949c9'"
+        sql = "update manager set status='',pic_num = '0' ,pic_1 = '', pic_2 = '', pic_3 = '' where userid = 'Ue9484510f6a0ba4d68b30d0c759949c9'"
         cursor.execute(sql)
         conn.commit()
 
@@ -2993,40 +4905,405 @@ def reply_postback(event):
         conn = psycopg2.connect(DATABASE_URL, sslmode='require')
         cursor = conn.cursor()
 
-        sql = "select news from manager where userid = 'Ue9484510f6a0ba4d68b30d0c759949c9'"
+        sql = "select * from news_table order by id DESC"
         cursor.execute(sql)
         conn.commit()
-        news = cursor.fetchone()[0]
+        result = cursor.fetchall()
 
 
-        news_status = ""
-        if news != '':
-            news_status = news
-
-        else:
+        if not result:
             news_status = "目前沒有最新消息唷😖"
 
-        line_bot_api.reply_message(event.reply_token, TextSendMessage("消息管理\n\n" + "目前最新消息：\n" + news_status
-            ,quick_reply=QuickReply(
-                items=[
-                    QuickReplyButton(
-                        action=PostbackAction(label="設定最新消息(文字)"
-                                            , data="設定最新消息(文字)")
-                    ),
-                    QuickReplyButton(
-                        action=PostbackAction(label="設定最新消息(文字 + 一張圖片)"
-                                            , data="設定最新消息(一張圖片)")
-                    ),
-                    QuickReplyButton(
-                        action=PostbackAction(label="設定最新消息(文字 + 兩張圖片)"
-                                            , data="設定最新消息(兩張圖片)")
-                    ),
-                    QuickReplyButton(
-                        action=PostbackAction(label="刪除最新消息"
-                                            , data="刪除最新消息")
-                    )
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(news_status
+                ,quick_reply=QuickReply(
+                    items=[
+                        QuickReplyButton(
+                            action=PostbackAction(label="設定最新消息(文字 + 一張圖片)"
+                                                , data="設定最新消息(一張圖片)")
+                        ),
+                        QuickReplyButton(
+                            action=PostbackAction(label="設定最新消息(文字 + 兩張圖片)"
+                                                , data="設定最新消息(兩張圖片)")
+                        )
+                    ]
+            )))
+            return 0
+
+        else:
+            content = {
+            "type": "carousel",
+            "contents": [
                 ]
-        )))
+            }
+            max_num = len(result)
+            if max_num > 10:
+                max_num = 10
+
+            for i in range(max_num):
+                style1 = {
+                    "type": "bubble",
+                    "size": "mega",
+                    "body": {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "box",
+                            "layout": "vertical",
+                            "contents": [
+                            {
+                                "type": "image",
+                                "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                                "aspectMode": "cover",
+                                "size": "full",
+                                "aspectRatio": "50:100"
+                            }
+                            ],
+                            "cornerRadius": "10px"
+                        },
+                        {
+                            "type": "text",
+                            "text": "最新消息",
+                            "size": "lg",
+                            "weight": "bold",
+                            "offsetTop": "5px"
+                        },
+                        {
+                            "type": "box",
+                            "layout": "vertical",
+                            "contents": [
+                            {
+                                "type": "button",
+                                "action": {
+                                "type": "postback",
+                                "label": "刪除",
+                                "data": "刪除作品集#news_table#"
+                                },
+                                "style": "primary",
+                                "height": "md",
+                                "offsetBottom": "10px"
+                            }
+                            ],
+                            "offsetTop": "10px",
+                            "paddingAll": "10px"
+                        }
+                        ],
+                        "paddingAll": "10px"
+                    }
+                }
+
+                style2 = {
+                    "type": "bubble",
+                    "size": "mega",
+                    "body": {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "box",
+                            "layout": "vertical",
+                            "contents": [
+                            {
+                                "type": "image",
+                                "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                                "aspectMode": "cover",
+                                "size": "full",
+                                "aspectRatio": "100:100"
+                            },
+                            {
+                                "type": "image",
+                                "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                                "aspectMode": "cover",
+                                "size": "full",
+                                "aspectRatio": "100:100"
+                            }
+                            ],
+                            "cornerRadius": "10px"
+                        },
+                        {
+                            "type": "text",
+                            "text": "最新消息",
+                            "size": "lg",
+                            "weight": "bold",
+                            "offsetTop": "5px"
+                        },
+                        {
+                            "type": "box",
+                            "layout": "vertical",
+                            "contents": [
+                            {
+                                "type": "button",
+                                "action": {
+                                "type": "postback",
+                                "label": "刪除",
+                                "data": "刪除作品集#news_table#"
+                                },
+                                "style": "primary",
+                                "height": "md",
+                                "offsetBottom": "10px"
+                            }
+                            ],
+                            "offsetTop": "10px",
+                            "paddingAll": "10px"
+                        }
+                        ],
+                        "paddingAll": "10px"
+                    }
+                }
+
+                if result[i][3] != "":
+                    style2['body']['contents'][2]['contents'][0]['action']['data'] += str(result[i][0])
+                    style2['body']['contents'][0]['contents'][0]['url'] = result[i][2]
+                    style2['body']['contents'][0]['contents'][1]['url'] = result[i][3]
+
+                    # 字數過多時
+                    # 92~104
+                    if len(result[i][1]) > 91:
+                        for j in range(2,9):
+                            text_block = {
+                                "type": "text",
+                                "text": "最新消息",
+                                "size": "lg",
+                                "weight": "bold",
+                                "offsetTop": "3px"
+                            }
+                            style2['body']['contents'].insert(j,text_block)
+                        style2['body']['contents'][1]['text'] = result[i][1][:13]
+                        style2['body']['contents'][2]['text'] = result[i][1][13:26]
+                        style2['body']['contents'][3]['text'] = result[i][1][26:39]
+                        style2['body']['contents'][4]['text'] = result[i][1][39:52]
+                        style2['body']['contents'][5]['text'] = result[i][1][52:65]
+                        style2['body']['contents'][6]['text'] = result[i][1][65:78]
+                        style2['body']['contents'][7]['text'] = result[i][1][78:91]
+                        style2['body']['contents'][8]['text'] = result[i][1][91:]
+
+                    # 78~91
+                    elif len(result[i][1]) > 78:
+                        for j in range(2,8):
+                            text_block = {
+                                "type": "text",
+                                "text": "最新消息",
+                                "size": "lg",
+                                "weight": "bold",
+                                "offsetTop": "3px"
+                            }
+                            style2['body']['contents'].insert(j,text_block)
+                        style2['body']['contents'][1]['text'] = result[i][1][:13]
+                        style2['body']['contents'][2]['text'] = result[i][1][13:26]
+                        style2['body']['contents'][3]['text'] = result[i][1][26:39]
+                        style2['body']['contents'][4]['text'] = result[i][1][39:52]
+                        style2['body']['contents'][5]['text'] = result[i][1][52:65]
+                        style2['body']['contents'][6]['text'] = result[i][1][65:78]
+                        style2['body']['contents'][7]['text'] = result[i][1][78:]
+                    elif len(result[i][1]) > 65:
+                        for j in range(2,7):
+                            text_block = {
+                                "type": "text",
+                                "text": "最新消息",
+                                "size": "lg",
+                                "weight": "bold",
+                                "offsetTop": "3px"
+                            }
+                            style2['body']['contents'].insert(j,text_block)
+                        print(i)
+                        style2['body']['contents'][1]['text'] = result[i][1][:13]
+                        style2['body']['contents'][2]['text'] = result[i][1][13:26]
+                        style2['body']['contents'][3]['text'] = result[i][1][26:39]
+                        style2['body']['contents'][4]['text'] = result[i][1][39:52]
+                        style2['body']['contents'][5]['text'] = result[i][1][52:65]
+                        style2['body']['contents'][6]['text'] = result[i][1][65:]
+                    elif len(result[i][1]) > 52:
+                        for j in range(2,6):
+                            text_block = {
+                                "type": "text",
+                                "text": "最新消息",
+                                "size": "lg",
+                                "weight": "bold",
+                                "offsetTop": "3px"
+                            }
+                            style2['body']['contents'].insert(j,text_block)
+                        style2['body']['contents'][1]['text'] = result[i][1][:13]
+                        style2['body']['contents'][2]['text'] = result[i][1][13:26]
+                        style2['body']['contents'][3]['text'] = result[i][1][26:39]
+                        style2['body']['contents'][4]['text'] = result[i][1][39:52]
+                        style2['body']['contents'][5]['text'] = result[i][1][52:]
+                    elif len(result[i][1]) > 39:
+                        for j in range(2,5):
+                            text_block = {
+                                "type": "text",
+                                "text": "最新消息",
+                                "size": "lg",
+                                "weight": "bold",
+                                "offsetTop": "3px"
+                            }
+                            style2['body']['contents'].insert(j,text_block)
+                        style2['body']['contents'][1]['text'] = result[i][1][:13]
+                        style2['body']['contents'][2]['text'] = result[i][1][13:26]
+                        style2['body']['contents'][3]['text'] = result[i][1][26:39]
+                        style2['body']['contents'][4]['text'] = result[i][1][39:]
+                    elif len(result[i][1]) > 26:
+                        for j in range(2,4):
+                            text_block = {
+                                "type": "text",
+                                "text": "最新消息",
+                                "size": "lg",
+                                "weight": "bold",
+                                "offsetTop": "3px"
+                            }
+                            style2['body']['contents'].insert(j,text_block)
+                        style2['body']['contents'][1]['text'] = result[i][1][:13]
+                        style2['body']['contents'][2]['text'] = result[i][1][13:26]
+                        style2['body']['contents'][3]['text'] = result[i][1][26:]
+                    elif len(result[i][1]) > 13:
+                        for j in range(2,3):
+                            text_block = {
+                                "type": "text",
+                                "text": "最新消息",
+                                "size": "lg",
+                                "weight": "bold",
+                                "offsetTop": "3px"
+                            }
+                            style2['body']['contents'].insert(j,text_block)
+                        style2['body']['contents'][1]['text'] = result[i][1][:13]
+                        style2['body']['contents'][2]['text'] = result[i][1][13:]
+                    else:
+                        style2['body']['contents'][1]['text'] = result[i][1]
+
+                    content['contents'].append(style2)
+
+                else:
+                    style1['body']['contents'][2]['contents'][0]['action']['data'] += str(result[i][0])
+                    style1['body']['contents'][0]['contents'][0]['url'] = result[i][2]
+                    # 字數過多時
+                    # 92~104
+                    if len(result[i][1]) > 91:
+                        for j in range(2,9):
+                            text_block = {
+                                "type": "text",
+                                "text": "最新消息",
+                                "size": "lg",
+                                "weight": "bold",
+                                "offsetTop": "3px"
+                            }
+                            style1['body']['contents'].insert(j,text_block)
+                        style1['body']['contents'][1]['text'] = result[i][1][:13]
+                        style1['body']['contents'][2]['text'] = result[i][1][13:26]
+                        style1['body']['contents'][3]['text'] = result[i][1][26:39]
+                        style1['body']['contents'][4]['text'] = result[i][1][39:52]
+                        style1['body']['contents'][5]['text'] = result[i][1][52:65]
+                        style1['body']['contents'][6]['text'] = result[i][1][65:78]
+                        style1['body']['contents'][7]['text'] = result[i][1][78:91]
+                        style1['body']['contents'][8]['text'] = result[i][1][91:]
+
+                    # 78~91
+                    elif len(result[i][1]) > 78:
+                        for j in range(2,8):
+                            text_block = {
+                                "type": "text",
+                                "text": "最新消息",
+                                "size": "lg",
+                                "weight": "bold",
+                                "offsetTop": "3px"
+                            }
+                            style1['body']['contents'].insert(j,text_block)
+                        style1['body']['contents'][1]['text'] = result[i][1][:13]
+                        style1['body']['contents'][2]['text'] = result[i][1][13:26]
+                        style1['body']['contents'][3]['text'] = result[i][1][26:39]
+                        style1['body']['contents'][4]['text'] = result[i][1][39:52]
+                        style1['body']['contents'][5]['text'] = result[i][1][52:65]
+                        style1['body']['contents'][6]['text'] = result[i][1][65:78]
+                        style1['body']['contents'][7]['text'] = result[i][1][78:]
+                    elif len(result[i][1]) > 65:
+                        for j in range(2,7):
+                            text_block = {
+                                "type": "text",
+                                "text": "最新消息",
+                                "size": "lg",
+                                "weight": "bold",
+                                "offsetTop": "3px"
+                            }
+                            style1['body']['contents'].insert(j,text_block)
+                        print(i)
+                        style1['body']['contents'][1]['text'] = result[i][1][:13]
+                        style1['body']['contents'][2]['text'] = result[i][1][13:26]
+                        style1['body']['contents'][3]['text'] = result[i][1][26:39]
+                        style1['body']['contents'][4]['text'] = result[i][1][39:52]
+                        style1['body']['contents'][5]['text'] = result[i][1][52:65]
+                        style1['body']['contents'][6]['text'] = result[i][1][65:]
+                    elif len(result[i][1]) > 52:
+                        for j in range(2,6):
+                            text_block = {
+                                "type": "text",
+                                "text": "最新消息",
+                                "size": "lg",
+                                "weight": "bold",
+                                "offsetTop": "3px"
+                            }
+                            style1['body']['contents'].insert(j,text_block)
+                        style1['body']['contents'][1]['text'] = result[i][1][:13]
+                        style1['body']['contents'][2]['text'] = result[i][1][13:26]
+                        style1['body']['contents'][3]['text'] = result[i][1][26:39]
+                        style1['body']['contents'][4]['text'] = result[i][1][39:52]
+                        style1['body']['contents'][5]['text'] = result[i][1][52:]
+                    elif len(result[i][1]) > 39:
+                        for j in range(2,5):
+                            text_block = {
+                                "type": "text",
+                                "text": "最新消息",
+                                "size": "lg",
+                                "weight": "bold",
+                                "offsetTop": "3px"
+                            }
+                            style1['body']['contents'].insert(j,text_block)
+                        style1['body']['contents'][1]['text'] = result[i][1][:13]
+                        style1['body']['contents'][2]['text'] = result[i][1][13:26]
+                        style1['body']['contents'][3]['text'] = result[i][1][26:39]
+                        style1['body']['contents'][4]['text'] = result[i][1][39:]
+                    elif len(result[i][1]) > 26:
+                        for j in range(2,4):
+                            text_block = {
+                                "type": "text",
+                                "text": "最新消息",
+                                "size": "lg",
+                                "weight": "bold",
+                                "offsetTop": "3px"
+                            }
+                            style1['body']['contents'].insert(j,text_block)
+                        style1['body']['contents'][1]['text'] = result[i][1][:13]
+                        style1['body']['contents'][2]['text'] = result[i][1][13:26]
+                        style1['body']['contents'][3]['text'] = result[i][1][26:]
+                    elif len(result[i][1]) > 13:
+                        for j in range(2,3):
+                            text_block = {
+                                "type": "text",
+                                "text": "最新消息",
+                                "size": "lg",
+                                "weight": "bold",
+                                "offsetTop": "3px"
+                            }
+                            style1['body']['contents'].insert(j,text_block)
+                        style1['body']['contents'][1]['text'] = result[i][1][:13]
+                        style1['body']['contents'][2]['text'] = result[i][1][13:]
+                    else:
+                        style1['body']['contents'][1]['text'] = result[i][1]
+
+                    content['contents'].append(style1)
+
+            line_bot_api.reply_message(event.reply_token, FlexSendMessage(alt_text="目前最新消息",contents=content
+                ,quick_reply=QuickReply(
+                    items=[
+                        QuickReplyButton(
+                            action=PostbackAction(label="設定最新消息(文字 + 一張圖片)"
+                                                , data="設定最新消息(一張圖片)")
+                        ),
+                        QuickReplyButton(
+                            action=PostbackAction(label="設定最新消息(文字 + 兩張圖片)"
+                                                , data="設定最新消息(兩張圖片)")
+                        )
+                    ]
+            )))
+
+            return 0
         return 0
 
     if "休息#" in event.postback.data:
@@ -3968,6 +6245,103 @@ def reply_postback(event):
         conn.close()
 
 
+        # 通知manager
+        notify_mamanger_flex = {
+            "type": "bubble",
+            "body": {
+                "type": "box",
+                "layout": "vertical",
+                "contents": [
+                {
+                    "type": "text",
+                    "text": "取消預約訊息",
+                    "weight": "bold",
+                    "color": "#1DB446",
+                    "size": "xl",
+                    "gravity": "center",
+                    "align": "center"
+                },
+                {
+                    "type": "separator",
+                    "margin": "lg"
+                },
+                {
+                    "type": "box",
+                    "layout": "vertical",
+                    "margin": "xxl",
+                    "spacing": "sm",
+                    "contents": [
+                    {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "contents": [
+                        {
+                            "type": "text",
+                            "text": "取消預約人",
+                            "size": "lg",
+                            "color": "#555555",
+                            "flex": 0
+                        },
+                        {
+                            "type": "text",
+                            "text": userName,
+                            "size": "lg",
+                            "color": "#111111",
+                            "align": "end"
+                        }
+                        ]
+                    },
+                    {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "contents": [
+                        {
+                            "type": "text",
+                            "text": "取消日期",
+                            "size": "lg",
+                            "color": "#555555",
+                            "flex": 0
+                        },
+                        {
+                            "type": "text",
+                            "text": date,
+                            "size": "lg",
+                            "color": "#111111",
+                            "align": "end"
+                        }
+                        ]
+                    },
+                    {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "contents": [
+                        {
+                            "type": "text",
+                            "text": "取消預約時間",
+                            "size": "lg",
+                            "color": "#555555",
+                            "flex": 0
+                        },
+                        {
+                            "type": "text",
+                            "text": time_table[start_index] + " - " + time_table[end_index-1],
+                            "size": "lg",
+                            "color": "#111111",
+                            "align": "end"
+                        }
+                        ]
+                    }
+                    ]
+                }
+                ]
+            }
+        }
+
+        line_bot_api.push_message('Ue9484510f6a0ba4d68b30d0c759949c9',FlexSendMessage(
+                alt_text = '取消預約通知',
+                contents = notify_mamanger_flex ))
+
+
         return 0
 
     if "刪除預約" in event.postback.data :
@@ -4865,16 +7239,17 @@ def reply_postback(event):
         for j in range(1,len(reservation['contents'][0]['body']['contents']),2):
 
             if date_list[select_day_index] == today :
-                # 當日時間超過下班時間 ,回 已經下班 跳 選日期
+                # 當日時間超過 預約改灰
+                reser_time_slot = reservation['contents'][0]['body']['contents'][j]['contents'][0]['text'].split('-')[0]
+                if nowtime > reser_time_slot:
+                    reservation['contents'][0]['body']['contents'][j]['contents'][1]['style'] = "secondary"
+
+            if date_list[select_day_index] == off_hour_date:
                 if ("["+str(j)+"]") in off_hour_index:
                     #換顏色 改已滿
                     reservation['contents'][0]['body']['contents'][j]['contents'][1]['style'] = "secondary"
                     reservation['contents'][0]['body']['contents'][j]['contents'][1]['action']['label'] = "下班"
                     reservation['contents'][0]['body']['contents'][j]['contents'][1]['action']['data'] = "下班"
-                # 當日時間超過 預約改灰
-                reser_time_slot = reservation['contents'][0]['body']['contents'][j]['contents'][0]['text'].split('-')[0]
-                if nowtime > reser_time_slot:
-                    reservation['contents'][0]['body']['contents'][j]['contents'][1]['style'] = "secondary"
 
             if ("["+str(j)+"]") in has_reser_index:
                 #換顏色 改已滿
@@ -4887,16 +7262,17 @@ def reply_postback(event):
         for j in range(1,len(reservation['contents'][1]['body']['contents']),2):
 
             if date_list[select_day_index] == today :
-                # 當日時間超過下班時間 ,回 已經下班 跳 選日期
+                # 當日時間超過 預約改灰
+                reser_time_slot = reservation['contents'][1]['body']['contents'][j]['contents'][0]['text'].split('-')[0]
+                if nowtime > reser_time_slot:
+                    reservation['contents'][1]['body']['contents'][j]['contents'][1]['style'] = "secondary"
+
+            if date_list[select_day_index] == off_hour_date:
                 if ("["+str(j+18)+"]") in off_hour_index:
                     #換顏色 改已滿
                     reservation['contents'][1]['body']['contents'][j]['contents'][1]['style'] = "secondary"
                     reservation['contents'][1]['body']['contents'][j]['contents'][1]['action']['label'] = "下班"
                     reservation['contents'][1]['body']['contents'][j]['contents'][1]['action']['data'] = "下班"
-                # 當日時間超過 預約改灰
-                reser_time_slot = reservation['contents'][1]['body']['contents'][j]['contents'][0]['text'].split('-')[0]
-                if nowtime > reser_time_slot:
-                    reservation['contents'][1]['body']['contents'][j]['contents'][1]['style'] = "secondary"
 
             if ("["+str(j+18)+"]") in has_reser_index:
                 #換顏色 改已滿
@@ -4947,7 +7323,7 @@ def reply_postback(event):
 
     # 手動新增預約
     if "缺預約人" in event.postback.data:
-            line_bot_api.reply_message(event.reply_token,TextSendMessage("請輸入預約人姓名 :"))
+
 
             service = event.postback.data.split('#')[1]
             resdate = event.postback.data.split('#')[2]
@@ -4957,23 +7333,156 @@ def reply_postback(event):
             conn = psycopg2.connect(DATABASE_URL, sslmode='require')
             cursor = conn.cursor()
 
-            sql = "update manager set add_service = '" + service + "' where userid = 'Ue9484510f6a0ba4d68b30d0c759949c9'"
-            cursor.execute(sql)
-            conn.commit()
+            out_of_service = ['外出','研習']
 
-            sql = "update manager set add_resdate = '" + resdate + "' where userid = 'Ue9484510f6a0ba4d68b30d0c759949c9'"
-            cursor.execute(sql)
-            conn.commit()
+            if service not in out_of_service :
+                line_bot_api.reply_message(event.reply_token,TextSendMessage("請輸入預約人姓名 :"))
 
-            sql = "update manager set status = '輸入預約人姓名' where userid = 'Ue9484510f6a0ba4d68b30d0c759949c9'"
-            cursor.execute(sql)
-            conn.commit()
+                sql = "update manager set add_service = '" + service + "' where userid = 'Ue9484510f6a0ba4d68b30d0c759949c9'"
+                cursor.execute(sql)
+                conn.commit()
+
+                sql = "update manager set add_resdate = '" + resdate + "' where userid = 'Ue9484510f6a0ba4d68b30d0c759949c9'"
+                cursor.execute(sql)
+                conn.commit()
+
+                sql = "update manager set status = '輸入預約人姓名' where userid = 'Ue9484510f6a0ba4d68b30d0c759949c9'"
+                cursor.execute(sql)
+                conn.commit()
+                return 0
+            else:
+                designer = '李貞'
+                sql = "update manager set add_name = '" + designer + "' where userid = 'Ue9484510f6a0ba4d68b30d0c759949c9'"
+                cursor.execute(sql)
+                conn.commit()
 
 
-            cursor.close()
-            conn.close()
+                sql = "update manager set add_service = '" + service + "' where userid = 'Ue9484510f6a0ba4d68b30d0c759949c9'"
+                cursor.execute(sql)
+                conn.commit()
 
-            return 0
+                sql = "update manager set add_resdate = '" + resdate + "' where userid = 'Ue9484510f6a0ba4d68b30d0c759949c9'"
+                cursor.execute(sql)
+                conn.commit()
+
+
+
+                date = resdate.split()[0]
+                time = resdate.split()[1]
+                check_reser = {
+                    "type": "bubble",
+                    "body": {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "text",
+                            "text": "外出訊息",
+                            "weight": "bold",
+                            "color": "#1DB446",
+                            "size": "xl",
+                            "gravity": "center",
+                            "align": "center"
+                        },
+                        {
+                            "type": "separator",
+                            "margin": "lg"
+                        },
+                        {
+                            "type": "box",
+                            "layout": "vertical",
+                            "margin": "xxl",
+                            "spacing": "sm",
+                            "contents": [
+                            {
+                                "type": "box",
+                                "layout": "horizontal",
+                                "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "預約日期",
+                                    "size": "lg",
+                                    "color": "#555555",
+                                    "flex": 0
+                                },
+                                {
+                                    "type": "text",
+                                    "text": business_day[date_list.index(date)],
+                                    "size": "lg",
+                                    "color": "#111111",
+                                    "align": "end"
+                                }
+                                ]
+                            },
+                            {
+                                "type": "box",
+                                "layout": "horizontal",
+                                "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "預約時間",
+                                    "size": "lg",
+                                    "color": "#555555",
+                                    "flex": 0
+                                },
+                                {
+                                    "type": "text",
+                                    "text": time,
+                                    "size": "lg",
+                                    "color": "#111111",
+                                    "align": "end"
+                                }
+                                ]
+                            },
+                            {
+                                "type": "box",
+                                "layout": "horizontal",
+                                "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "美髮項目",
+                                    "size": "lg",
+                                    "color": "#555555",
+                                    "flex": 0
+                                },
+                                {
+                                    "type": "text",
+                                    "text": service,
+                                    "size": "lg",
+                                    "color": "#111111",
+                                    "align": "end"
+                                }
+                                ]
+                            }
+                            ]
+                        }
+                        ]
+                    }
+                }
+                line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="確認新增訊息",contents=check_reser
+                                        ,quick_reply= QuickReply(
+                                            items=[
+                                                QuickReplyButton(
+                                                    action=PostbackAction(label="確認新增"
+                                                                        , data="確認新增")
+                                                ),
+                                                QuickReplyButton(
+                                                    action=PostbackAction(label="取消新增"
+                                                                        , data="取消新增")
+                                                )
+                                            ]
+                                        )))
+
+                #清空manager status
+                sql = "update manager set status = '' where userid = 'Ue9484510f6a0ba4d68b30d0c759949c9'"
+                cursor.execute(sql)
+                conn.commit()
+
+                cursor.close()
+                conn.close()
+
+
+                return 0
 
     if "缺美髮項目和預約人" in event.postback.data:
             reser_data = event.postback.data.split('#')[1]
@@ -5024,12 +7533,15 @@ def reply_postback(event):
                                             , data="缺預約人#剪髮#"+reser_data)
                     ),
                     QuickReplyButton(
-                        action=PostbackAction(label="剪髮+洗髮"
-                                            , data="缺預約人#剪髮(洗髮)#"+reser_data)
-                    ),
-                    QuickReplyButton(
                         action=PostbackAction(label="洗髮"
                                             , data="缺預約人#洗髮#"+reser_data)
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="剪髮+洗髮"
+                                            , data="缺預約人#剪髮(洗髮)#"+reser_data)
+                    ),QuickReplyButton(
+                        action=PostbackAction(label="護髮+洗髮"
+                                            , data="缺預約人#護髮(洗髮)#"+reser_data)
                     ),
                     QuickReplyButton(
                         action=PostbackAction(label="燙髮(男)"
@@ -5042,6 +7554,18 @@ def reply_postback(event):
                     QuickReplyButton(
                         action=PostbackAction(label="染髮"
                                             , data="缺預約人#染髮#"+reser_data)
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="染髮+剪髮"
+                                            , data="缺預約人#染髮(剪髮)#"+reser_data)
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="外出"
+                                            , data="缺預約人#外出#"+reser_data)
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="研習"
+                                            , data="缺預約人#研習#"+reser_data)
                     )
                 ]
             )))
@@ -5267,12 +7791,16 @@ def reply_postback(event):
                                             , data="剪髮")
                     ),
                     QuickReplyButton(
-                        action=PostbackAction(label="剪髮(洗髮)"
+                        action=PostbackAction(label="洗髮"
+                                            , data="洗髮")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="剪髮+洗髮"
                                             , data="剪髮(洗髮)")
                     ),
                     QuickReplyButton(
-                        action=PostbackAction(label="洗髮"
-                                            , data="洗髮")
+                        action=PostbackAction(label="護髮+洗髮"
+                                            , data="護髮(洗髮)")
                     ),
                     QuickReplyButton(
                         action=PostbackAction(label="燙髮(男)"
@@ -5285,9 +7813,13 @@ def reply_postback(event):
                     QuickReplyButton(
                         action=PostbackAction(label="染髮"
                                             , data="染髮")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="染髮+剪髮"
+                                            , data="染髮(剪髮)")
                     )
                 ]
-        )))
+            )))
             return 0
 
         # service time
@@ -5316,7 +7848,7 @@ def reply_postback(event):
             reser_time.append(time_table[index + 2])
 
         if service == '洗髮(長髮)' or service == '洗髮(短髮)':
-            hour = "30分鐘"
+            service_time = "30分鐘"
             total_time = slot_table[index:index + 1]
             reser_time.append(time_table[index])
 
@@ -5325,9 +7857,17 @@ def reply_postback(event):
 
             reser_time.append(time_table[index + 1])
 
+        if service == '護髮(洗髮)':
+            service_time = "一小時"
+            total_time = slot_table[index:index + 2]
+            reser_time.append(time_table[index])
+
+            for i in range(len(total_time)):
+                table_columns += ",slot" +total_time[i]
+            reser_time.append(time_table[index + 2])
 
         if service == '燙髮(男)':
-            hour = "兩小時"
+            service_time = "兩小時"
             total_time = slot_table[index:index + 4]
             reser_time.append(time_table[index])
 
@@ -5337,7 +7877,7 @@ def reply_postback(event):
             reser_time.append(time_table[index + 4])
 
         if service == '燙髮(短髮)':
-            hour = "兩小時"
+            service_time = "兩小時"
             total_time = slot_table[index:index + 4]
             reser_time.append(time_table[index])
 
@@ -5347,7 +7887,7 @@ def reply_postback(event):
             reser_time.append(time_table[index + 4])
 
         if service == '燙髮(中長髮)':
-            hour = "三個半小時"
+            service_time = "三個半小時"
             total_time = slot_table[index:index + 7]
             reser_time.append(time_table[index])
 
@@ -5357,7 +7897,7 @@ def reply_postback(event):
             reser_time.append(time_table[index + 7])
 
         if service == '燙髮(長髮)':
-            hour = "四小時"
+            service_time = "四小時"
             total_time = slot_table[index:index + 8]
             reser_time.append(time_table[index])
 
@@ -5367,7 +7907,7 @@ def reply_postback(event):
             reser_time.append(time_table[index + 8])
 
         if service == '染髮(短髮)':
-            hour = "一個半小時"
+            service_time = "一個半小時"
             total_time = slot_table[index:index + 3]
             reser_time.append(time_table[index])
 
@@ -5377,7 +7917,7 @@ def reply_postback(event):
             reser_time.append(time_table[index + 3])
 
         if service == '染髮(中長髮)':
-            hour = "兩小時"
+            service_time = "兩小時"
             total_time = slot_table[index:index + 4]
             reser_time.append(time_table[index])
 
@@ -5387,7 +7927,7 @@ def reply_postback(event):
             reser_time.append(time_table[index + 4])
 
         if service == '染髮(長髮)':
-            hour = "兩個半小時"
+            service_time = "兩個半小時"
             total_time = slot_table[index:index + 5]
             reser_time.append(time_table[index])
 
@@ -5396,6 +7936,35 @@ def reply_postback(event):
 
             reser_time.append(time_table[index + 5])
 
+        if service == '染髮(剪髮)(短髮)':
+            service_time = "兩小時"
+            total_time = slot_table[index:index + 4]
+            reser_time.append(time_table[index])
+
+            for i in range(len(total_time)):
+                table_columns += ",slot" +total_time[i]
+
+            reser_time.append(time_table[index + 4])
+
+        if service == '染髮(剪髮)(中長髮)':
+            service_time = "兩個半小時"
+            total_time = slot_table[index:index + 5]
+            reser_time.append(time_table[index])
+
+            for i in range(len(total_time)):
+                table_columns += ",slot" +total_time[i]
+
+            reser_time.append(time_table[index + 5])
+
+        if service == '染髮(剪髮)(長髮)':
+            service_time = "三小時"
+            total_time = slot_table[index:index + 6]
+            reser_time.append(time_table[index])
+
+            for i in range(len(total_time)):
+                table_columns += ",slot" +total_time[i]
+
+            reser_time.append(time_table[index + 6])
 
 
 
@@ -5609,7 +8178,7 @@ def reply_postback(event):
         )))
         return 0
 
-    check_length_string = ["燙髮(女)","染髮"]
+    check_length_string = ["燙髮(女)","染髮","染髮(剪髮)"]
     if event.postback.data in check_length_string:
         tmp = event.postback.data
         if tmp == "燙髮(女)":
@@ -5635,8 +8204,8 @@ def reply_postback(event):
         )))
         return 0
 
-    accept_string = ["剪髮","剪髮(洗髮)","燙髮(男)","洗髮(長髮)","洗髮(短髮)","燙髮(短髮)",
-    "燙髮(中長髮)","燙髮(長髮)","染髮(短髮)","染髮(中長髮)","染髮(長髮)"]
+    accept_string = ["剪髮","剪髮(洗髮)","護髮(洗髮)","燙髮(男)","洗髮(長髮)","洗髮(短髮)","燙髮(短髮)",
+    "燙髮(中長髮)","燙髮(長髮)","染髮(短髮)","染髮(中長髮)","染髮(長髮)","染髮(剪髮)(短髮)","染髮(剪髮)(中長髮)","染髮(剪髮)(長髮)"]
     if(event.postback.data in accept_string):
         line_bot_api.reply_message(event.reply_token, TextSendMessage("請選擇預約日期"
             ,quick_reply=QuickReply(
@@ -5696,535 +8265,171 @@ def handle_message(event):
     update_bussiness_day()
     userID = event.source.user_id
     userName = line_bot_api.get_profile(event.source.user_id).display_name
+    root = ['Ue9484510f6a0ba4d68b30d0c759949c9', 'Ued44f07a33a44078eaf591e8796e3c02']
 
-    if isinstance(event.message, TextMessage):
+    if userID not in root:
+        if isinstance(event.message, TextMessage):
 
-        if event.message.text == "最新消息":
-            #DB set
-            DATABASE_URL = os.environ['DATABASE_URL']
-            conn = psycopg2.connect(DATABASE_URL, sslmode='require')
-            cursor = conn.cursor()
-
-            sql = "select news from manager where userid = 'Ue9484510f6a0ba4d68b30d0c759949c9'"
-            cursor.execute(sql)
-            conn.commit()
-            news = cursor.fetchone()[0]
-
-            if news != '':
-                line_bot_api.reply_message(event.reply_token , TextSendMessage(news))
-
-            else:
-                line_bot_api.reply_message(event.reply_token , TextSendMessage("目前沒有最新消息。"))
-
-            return 0
-
-
-        if event.message.text == "聯絡我們":
-            contact_us_flex = {
-                "type": "bubble",
-                "size": "giga",
-                "body": {
-                    "type": "box",
-                    "layout": "vertical",
-                    "contents": [
-                    {
-                        "type": "box",
-                        "layout": "horizontal",
-                        "contents": [
-                        {
-                            "type": "image",
-                            "url": "https://i.imgur.com/GhCc2qC.jpg",
-                            "size": "5xl",
-                            "aspectMode": "cover",
-                            "aspectRatio": "150:196",
-                            "gravity": "center",
-                            "flex": 1
-                        },
-                        {
-                            "type": "box",
-                            "layout": "vertical",
-                            "contents": [
-                            {
-                                "type": "image",
-                                "url": "https://i.imgur.com/pOVQ6Ro.jpg",
-                                "size": "full",
-                                "aspectMode": "cover",
-                                "aspectRatio": "150:98",
-                                "gravity": "center"
-                            },
-                            {
-                                "type": "image",
-                                "url": "https://i.imgur.com/5BiqNjh.jpg",
-                                "size": "full",
-                                "aspectMode": "cover",
-                                "aspectRatio": "150:98",
-                                "gravity": "center"
-                            }
-                            ],
-                            "flex": 1
-                        }
-                        ]
-                    },
-                    {
-                        "type": "box",
-                        "layout": "horizontal",
-                        "contents": [
-                        {
-                            "type": "box",
-                            "layout": "vertical",
-                            "contents": [
-                            {
-                                "type": "image",
-                                "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
-                                "aspectMode": "cover",
-                                "size": "full"
-                            }
-                            ],
-                            "cornerRadius": "100px",
-                            "width": "72px",
-                            "height": "72px"
-                        },
-                        {
-                            "type": "box",
-                            "layout": "vertical",
-                            "contents": [
-                            {
-                                "type": "text",
-                                "contents": [
-                                {
-                                    "type": "span",
-                                    "text": "MB 髮藝",
-                                    "weight": "bold",
-                                    "color": "#000000",
-                                    "size": "lg"
-                                }
-                                ],
-                                "size": "sm"
-                            },
-                            {
-                                "type": "separator",
-                                "margin": "md"
-                            },
-                            {
-                                "type": "text",
-                                "contents": [
-                                {
-                                    "type": "span",
-                                    "text": "設計師💇🏻‍♀️ 李貞",
-                                    "weight": "bold",
-                                    "color": "#000000"
-                                }
-                                ],
-                                "size": "sm",
-                                "margin": "md"
-                            },
-                            {
-                                "type": "separator",
-                                "margin": "md"
-                            },
-                            {
-                                "type": "text",
-                                "contents": [
-                                {
-                                    "type": "span",
-                                    "text": "地址🏡 屏東市中華路431號",
-                                    "weight": "bold",
-                                    "color": "#000000"
-                                }
-                                ],
-                                "size": "sm",
-                                "margin": "md"
-                            },
-                            {
-                                "type": "separator",
-                                "margin": "md"
-                            },
-                            {
-                                "type": "text",
-                                "contents": [
-                                {
-                                    "type": "span",
-                                    "text": "聯絡電話 📞 (08)-7366715",
-                                    "weight": "bold",
-                                    "color": "#000000"
-                                }
-                                ],
-                                "size": "sm",
-                                "margin": "md"
-                            }
-                            ]
-                        }
-                        ],
-                        "spacing": "xl",
-                        "paddingAll": "20px"
-                    },
-                    {
-                        "type": "box",
-                        "layout": "horizontal",
-                        "contents": [
-                        {
-                            "type": "button",
-                            "action": {
-                            "type": "uri",
-                            "label": "髮妝詢問",
-                            "uri": "https://line.me/ti/p/MY9sqcvY6h"
-                            },
-                            "gravity": "center",
-                            "height": "md",
-                            "flex": 1
-                        },
-                        {
-                            "type": "button",
-                            "action": {
-                            "type": "uri",
-                            "label": "撥打電話",
-                            "uri": "tel://087366715"
-                            },
-                            "height": "md",
-                            "flex": 1,
-                            "gravity": "center"
-                        },
-                        {
-                            "type": "button",
-                            "action": {
-                            "type": "uri",
-                            "label": "開啟導航",
-                            "uri": "https://goo.gl/maps/UusBtgnWjZAMzYhW6"
-                            },
-                            "height": "md",
-                            "flex": 1,
-                            "gravity": "center"
-                        }
-                        ],
-                        "paddingAll": "20px"
-                    },
-                    {
-                        "type": "spacer"
-                    }
-                    ],
-                    "paddingAll": "0px"
-                }
-                }
-            line_bot_api.reply_message(event.reply_token, FlexSendMessage(
-                    alt_text = '聯絡資訊',
-                    contents = contact_us_flex ))
-
-            return 0
-
-        if event.message.text == "預約剪髮":
-            #DB setting
-            DATABASE_URL = os.environ['DATABASE_URL']
-            conn = psycopg2.connect(DATABASE_URL, sslmode='require')
-            cursor = conn.cursor()
-
-
-            # update DB to newest 7 dates
-            theTime = datetime.datetime.now().strftime(ISOTIMEFORMAT)
-            today = str(theTime).split()[0]
-            nowtime = str(theTime).split()[1]
-            sql = "delete from reservation where reser_date < '" + today +"';"
-            cursor.execute(sql)
-            conn.commit()
-
-            #DB update new customer into customer table
-            query = f"""select * from customer where userid = (%s);"""
-            cursor.execute(query,(userID,))
-            conn.commit()
-            if cursor.fetchone() == None:
-                record = (userID,'',userName,'','','',0,'')
-                table_columns = '(userid, service ,name,has_reser1,has_reser2,has_reser3,reser_num,reser_full_data)'
-                postgres_insert_query = f"""INSERT INTO customer {table_columns} VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"""
-                cursor.execute(postgres_insert_query, record)
-                conn.commit()
-            else:
-                sql = "select reser_num from customer where userid = '" +userID + "';"
-                cursor.execute(sql)
-                conn.commit()
-
-                reser_num = cursor.fetchone()[0]
-                if reser_num == 3:
-                    line_bot_api.reply_message(event.reply_token, TextSendMessage("最多一次只能預約三個時段喔！😥\n如果要調整時段請到\"預約查詢做調整\""))
-                    return 0
-            cursor.close()
-            conn.close()
-
-
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(
-                "請選擇美髮項目💇\n\n" +
-                "剪髮： 30分鐘\n"   +
-                "洗髮： 30分鐘 \n"   +
-                "剪髮 + 洗髮： 1小時\n\n" +
-                "------------------\n\n" +
-                "男生燙髮： 2小時 \n\n " +
-                "------------------\n\n" +
-                "女生燙髮： \n" +
-                "短髮： 2小時\n" +
-                "中長髮： 3.5小時\n" +
-                "長髮： 4小時\n\n" +
-                "------------------\n\n" +
-                "染髮： \n" +
-                "短髮： 1.5小時\n" +
-                "中長髮： 2小時\n" +
-                "長髮： 2.5小時"
-
-                ,quick_reply=QuickReply(
-                    items=[
-                        QuickReplyButton(
-                            action=PostbackAction(label="剪髮"
-                                                , data="剪髮")
-                        ),
-                        QuickReplyButton(
-                            action=PostbackAction(label="剪髮+洗髮"
-                                                , data="剪髮(洗髮)")
-                        ),
-                        QuickReplyButton(
-                            action=PostbackAction(label="洗髮"
-                                                , data="洗髮")
-                        ),
-                        QuickReplyButton(
-                            action=PostbackAction(label="燙髮(男)"
-                                                , data="燙髮(男)")
-                        ),
-                        QuickReplyButton(
-                            action=PostbackAction(label="燙髮(女)"
-                                                , data="燙髮(女)")
-                        ),
-                        QuickReplyButton(
-                            action=PostbackAction(label="染髮"
-                                                , data="染髮")
-                        )
-                    ]
-            )))
-            return 0
-
-        if event.message.text == "預約查詢":
-            #DB set
-            DATABASE_URL = os.environ['DATABASE_URL']
-            conn = psycopg2.connect(DATABASE_URL, sslmode='require')
-            cursor = conn.cursor()
-
-            #DB update new customer into customer table
-            query = f"""select * from customer where userid = (%s);"""
-            cursor.execute(query,(userID,))
-            conn.commit()
-            if cursor.fetchone() == None:
-                record = (userID,'',userName,'','','',0,'')
-                table_columns = '(userid, service ,name,has_reser1,has_reser2,has_reser3,reser_num,reser_full_data)'
-                postgres_insert_query = f"""INSERT INTO customer {table_columns} VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"""
-                cursor.execute(postgres_insert_query, record)
-                conn.commit()
-
-            sql = "select reser_num from customer where userid = '" +userID + "';"
-            cursor.execute(sql)
-            conn.commit()
-            reser_num = int(cursor.fetchone()[0])
-            if reser_num == 0:
-                line_bot_api.reply_message(event.reply_token, TextSendMessage("目前沒有預約紀錄唷💇"))
-                return 0
-
-            #取 has_reser_list
-            has_reser_list = []
-            for i in range(3):
-                sql = "select has_reser"+ str(i+1) + " from customer where userid = '" + userID + "';"
-                cursor.execute(sql)
-                conn.commit()
-                result = cursor.fetchone()[0]
-                if result != '':
-                    has_reser_list.append(result)
-
-
-            #檢查 has_reser日期 有沒有大於今天日期 若沒有 刪掉
-            theTime = datetime.datetime.now().strftime(ISOTIMEFORMAT)
-            today = str(theTime).split()[0]
-            nowtime = str(theTime).split()[1]
-
-            re_write_into_has_reser = []
-            for i in range(len(has_reser_list)):
-                date = has_reser_list[i].split('#')[0].split()[0]
-                time = has_reser_list[i].split('#')[1].split('-')[1]
-                if today > date:
-                    reser_num-=1
-                    sql = "update customer set has_reser" + str(i+1) + " = '' where userid = '" + userID +"';"
-                    cursor.execute(sql)
-                    conn.commit()
-                    continue
-                if today == date:
-                    if nowtime > time:
-                        reser_num-=1
-                        sql = "update customer set has_reser" + str(i+1) + " = '' where userid = '" + userID +"';"
-                        cursor.execute(sql)
-                        conn.commit()
-                        continue
-                re_write_into_has_reser.append(has_reser_list[i])
-
-
-            #先清空 再 rewrite
-            for i in range(3):
-                sql = sql = "update customer set has_reser" + str(i+1) + " = '' where userid = '" + userID +"';"
-                cursor.execute(sql)
-                conn.commit()
-
-            # rewrite into customer
-            if reser_num > 0 :
-                #rewrite data an update reser_num
-                sql = "update customer set reser_num = " + str(reser_num) + " where userid = '" + userID +"';"
-                cursor.execute(sql)
-                conn.commit()
-
-                for i in range(len(re_write_into_has_reser)):
-                    sql = "update customer set has_reser" + str(i+1) + " = '" + re_write_into_has_reser[i] + "' where userid = '" + userID +"';"
-                    cursor.execute(sql)
-                    conn.commit()
-            # 沒有紀錄就 return 0
-            else:
-                sql = "update customer set reser_num = 0 where userid = '" + userID +"';"
-                cursor.execute(sql)
-                conn.commit()
-                line_bot_api.reply_message(event.reply_token, TextSendMessage("目前沒有預約紀錄"))
-                return 0
-
-
-
-            search_reservation = {
-                "type": "carousel",
-                "contents": [
-                ]
-            }
-
-            # 被 apprnd 的 item 必須在for 裡面初始化 ，否則append進去item 的都會參考同一個位置
-            for i in range(len(re_write_into_has_reser)):
-                research_data = {
+            command_text = ['最新消息','聯絡我們','預約選項','作品集','預約查詢','今日預約','本週預約','最新消息管理','營業時間管理']
+            if event.message.text not in command_text:
+            # 提醒客人輸入非觸發訊息，要跳窗
+                contact_us_flex = {
                     "type": "bubble",
+                    "size": "giga",
                     "body": {
                         "type": "box",
                         "layout": "vertical",
                         "contents": [
                         {
                             "type": "text",
-                            "text": "預約紀錄",
-                            "weight": "bold",
-                            "color": "#1DB446",
-                            "size": "xl",
-                            "gravity": "center",
-                            "align": "center"
+                            "text": "在這邊傳訊息，設計師無法看到。",
+                            "align": "center",
+                            "offsetTop": "10px"
                         },
                         {
-                            "type": "separator",
-                            "margin": "lg"
+                            "type": "text",
+                            "text": "如果需要和設計師溝通，請點選以下選項唷！",
+                            "align": "center",
+                            "offsetTop": "10px"
                         },
                         {
                             "type": "box",
-                            "layout": "vertical",
-                            "margin": "xxl",
-                            "spacing": "sm",
+                            "layout": "horizontal",
                             "contents": [
                             {
                                 "type": "box",
-                                "layout": "horizontal",
+                                "layout": "vertical",
                                 "contents": [
                                 {
-                                    "type": "text",
-                                    "text": "預約日期",
-                                    "size": "lg",
-                                    "color": "#555555",
-                                    "flex": 0
-                                },
-                                {
-                                    "type": "text",
-                                    "text": "05-18 (三)",
-                                    "size": "lg",
-                                    "color": "#111111",
-                                    "align": "end"
+                                    "type": "image",
+                                    "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                                    "aspectMode": "cover",
+                                    "size": "full"
                                 }
-                                ]
+                                ],
+                                "cornerRadius": "100px",
+                                "width": "72px",
+                                "height": "72px"
                             },
                             {
                                 "type": "box",
-                                "layout": "horizontal",
+                                "layout": "vertical",
                                 "contents": [
                                 {
                                     "type": "text",
-                                    "text": "預約時間",
-                                    "size": "lg",
-                                    "color": "#555555",
-                                    "flex": 0
+                                    "contents": [
+                                    {
+                                        "type": "span",
+                                        "text": "MB 髮妝",
+                                        "weight": "bold",
+                                        "color": "#000000",
+                                        "size": "lg"
+                                    }
+                                    ],
+                                    "size": "sm"
+                                },
+                                {
+                                    "type": "separator",
+                                    "margin": "md"
                                 },
                                 {
                                     "type": "text",
-                                    "text": "14:00-15:00",
-                                    "size": "lg",
-                                    "color": "#111111",
-                                    "align": "end"
-                                }
-                                ]
-                            },
-                            {
-                                "type": "box",
-                                "layout": "horizontal",
-                                "contents": [
+                                    "contents": [
+                                    {
+                                        "type": "span",
+                                        "text": "設計師💇🏻‍♀️ 李貞",
+                                        "weight": "bold",
+                                        "color": "#000000"
+                                    }
+                                    ],
+                                    "size": "sm",
+                                    "margin": "md"
+                                },
                                 {
-                                    "type": "text",
-                                    "text": "美髮項目",
-                                    "size": "lg",
-                                    "color": "#555555",
-                                    "flex": 0
+                                    "type": "separator",
+                                    "margin": "md"
                                 },
                                 {
                                     "type": "text",
-                                    "text": "燙髮",
-                                    "size": "lg",
-                                    "color": "#111111",
-                                    "align": "end"
+                                    "contents": [
+                                    {
+                                        "type": "span",
+                                        "text": "地址🏡 屏東市中華路431號",
+                                        "weight": "bold",
+                                        "color": "#000000"
+                                    }
+                                    ],
+                                    "size": "sm",
+                                    "margin": "md"
+                                },
+                                {
+                                    "type": "separator",
+                                    "margin": "md"
+                                },
+                                {
+                                    "type": "text",
+                                    "contents": [
+                                    {
+                                        "type": "span",
+                                        "text": "聯絡電話 📞 (08)-7366715",
+                                        "weight": "bold",
+                                        "color": "#000000"
+                                    }
+                                    ],
+                                    "size": "sm",
+                                    "margin": "md"
                                 }
                                 ]
                             }
-                            ]
+                            ],
+                            "spacing": "xl",
+                            "paddingAll": "35px"
                         },
                         {
-                            "type": "button",
-                            "action": {
-                            "type": "postback",
-                            "label": "刪除預約",
-                            "data": "刪除預約"
+                            "type": "box",
+                            "layout": "horizontal",
+                            "contents": [
+                            {
+                                "type": "button",
+                                "action": {
+                                "type": "uri",
+                                "label": "撥打電話",
+                                "uri": "tel://087366715"
+                                },
+                                "height": "sm",
+                                "flex": 1,
+                                "gravity": "center"
                             },
-                            "style": "primary",
-                            "margin": "md"
+                            {
+                                "type": "button",
+                                "action": {
+                                "type": "uri",
+                                "label": "聯絡設計師",
+                                "uri": "https://line.me/ti/p/MY9sqcvY6h"
+                                },
+                                "gravity": "center",
+                                "height": "sm",
+                                "flex": 1
+                            }
+                            ],
+                            "paddingAll": "20px"
+                        },
+                        {
+                            "type": "spacer"
                         }
-                        ]
+                        ],
+                        "paddingAll": "10px"
                     }
-                }
-                search_reservation['contents'].append(research_data)
+                    }
+                line_bot_api.reply_message(event.reply_token, FlexSendMessage(
+                            alt_text = '聯絡資訊',
+                            contents = contact_us_flex ))
 
-
-            for i in range(len(re_write_into_has_reser)):
-                write_date = re_write_into_has_reser[i].split('#')[0]
-                write_time = re_write_into_has_reser[i].split('#')[1]
-                write_service = re_write_into_has_reser[i].split('#')[2]
-                search_reservation['contents'][i]['body']['contents'][2]['contents'][0]['contents'][1]['text'] = write_date
-                search_reservation['contents'][i]['body']['contents'][2]['contents'][1]['contents'][1]['text'] = write_time
-                search_reservation['contents'][i]['body']['contents'][2]['contents'][2]['contents'][1]['text'] = write_service
-
-                write_in_date = write_date.split()[0]
-                write_in_time1_index = time_table.index(write_time.split('-')[0])
-                write_in_time2_index = time_table.index(write_time.split('-')[1])
-
-                write_in_data = str(write_in_date) + ' ' + str(write_in_time1_index) + ' ' + str(write_in_time2_index)
-                search_reservation['contents'][i]['body']['contents'][3]['action']['data'] = '刪除預約 ' + write_in_data + ' ' + str(i+1)
-
-            line_bot_api.reply_message(event.reply_token, FlexSendMessage(
-                    alt_text = '預約查詢結果',
-                    contents = search_reservation ))
-
-
-            cursor.close()
-            conn.close()
-
-            return 0
-
+                return 0
 
 
     # 確認是老闆本人
-    if userID == 'Ue9484510f6a0ba4d68b30d0c759949c9' :
+    if userID in root :
         #get manager status
         #DB set
         DATABASE_URL = os.environ['DATABASE_URL']
@@ -6392,34 +8597,29 @@ def handle_message(event):
         if manager_status == '輸入最新消息':
             line_bot_api.reply_message(event.reply_token,TextSendMessage("已新增完成🗒"))
 
-            # update the news
-            sql = "update manager set news = '" + event.message.text + "' where userid = 'Ue9484510f6a0ba4d68b30d0c759949c9'"
-            cursor.execute(sql)
-            conn.commit()
             # get the url list
-            sql = "select news_p1,news_p2 from manager where userid = 'Ue9484510f6a0ba4d68b30d0c759949c9'"
+            sql = "select pic_1,pic_2 from manager where userid = 'Ue9484510f6a0ba4d68b30d0c759949c9'"
             cursor.execute(sql)
             conn.commit()
             img_list = cursor.fetchone()
 
-
-            # update the pic url
-            sql = "update manager set news_p1 = '" + img_list[0] + "' where userid = 'Ue9484510f6a0ba4d68b30d0c759949c9'"
-            cursor.execute(sql)
-            conn.commit()
-
-            sql = "update manager set news_p2 = '" + img_list[1] + "' where userid = 'Ue9484510f6a0ba4d68b30d0c759949c9'"
-            cursor.execute(sql)
+            # insert into news_table
+            # update to the portfolio
+            table_columns = '(news,news_p1,news_p2)'
+            sql = f"""insert into news_table {table_columns} values (%s,%s,%s)"""
+            cursor.execute(sql , (event.message.text,img_list[0],img_list[1]))
             conn.commit()
 
 
             #reset pic_num ,reset img_url
-            sql = "update manager set status='',pic_num = '0' ,pic_1 = '', pic_2 = '', pic_3 = '',news_p1 = '', news_p2 = '' where userid = 'Ue9484510f6a0ba4d68b30d0c759949c9'"
+            sql = "update manager set news='',status='',pic_num = '0' ,pic_1 = '', pic_2 = '', pic_3 = '' where userid = 'Ue9484510f6a0ba4d68b30d0c759949c9'"
             cursor.execute(sql)
             conn.commit()
 
             cursor.close()
             conn.close()
+
+            line_bot_api.reply_message(event.reply_token,TextSendMessage("已新增完成🗒"))
             return 0
 
         #上傳圖片
