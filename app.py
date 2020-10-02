@@ -674,25 +674,373 @@ def reply_postback(event):
         cursor.close()
         conn.close()
 
+        flex_items = {
+            "type": "bubble",
+            "size": "giga",
+            "body": {
+                "type": "box",
+                "layout": "vertical",
+                "contents": [
+                {
+                    "type": "text",
+                    "text": "價目表",
+                    "align": "center",
+                    "size": "xxl",
+                    "weight": "bold"
+                },
+                {
+                    "type": "separator",
+                    "margin": "md"
+                },
+                {
+                    "type": "box",
+                    "layout": "horizontal",
+                    "contents": [
+                    {
+                        "type": "text",
+                        "text": "美髮項目",
+                        "align": "center",
+                        "weight": "bold",
+                        "size": "xl"
+                    },
+                    {
+                        "type": "text",
+                        "text": "時間",
+                        "align": "center",
+                        "weight": "bold",
+                        "size": "xl"
+                    },
+                    {
+                        "type": "text",
+                        "text": "價錢",
+                        "align": "center",
+                        "weight": "bold",
+                        "size": "xl"
+                    }
+                    ],
+                    "paddingAll": "10px"
+                },
+                {
+                    "type": "box",
+                    "layout": "horizontal",
+                    "contents": [
+                    {
+                        "type": "text",
+                        "text": "洗髮(短)",
+                        "align": "center",
+                        "weight": "bold"
+                    },
+                    {
+                        "type": "text",
+                        "text": "30分鐘",
+                        "align": "center",
+                        "weight": "bold"
+                    },
+                    {
+                        "type": "text",
+                        "text": "$ 180",
+                        "align": "center",
+                        "weight": "bold"
+                    }
+                    ],
+                    "paddingAll": "10px"
+                },
+                {
+                    "type": "box",
+                    "layout": "horizontal",
+                    "contents": [
+                    {
+                        "type": "text",
+                        "text": "洗髮(長)",
+                        "align": "center",
+                        "weight": "bold"
+                    },
+                    {
+                        "type": "text",
+                        "text": "30分鐘",
+                        "align": "center",
+                        "weight": "bold"
+                    },
+                    {
+                        "type": "text",
+                        "text": "$ 200",
+                        "align": "center",
+                        "weight": "bold"
+                    }
+                    ],
+                    "paddingAll": "10px"
+                },
+                {
+                    "type": "separator",
+                    "margin": "md"
+                },
+                {
+                    "type": "box",
+                    "layout": "horizontal",
+                    "contents": [
+                    {
+                        "type": "text",
+                        "text": "小孩剪髮",
+                        "align": "center",
+                        "weight": "bold"
+                    },
+                    {
+                        "type": "text",
+                        "text": "1小時",
+                        "align": "center",
+                        "weight": "bold"
+                    },
+                    {
+                        "type": "text",
+                        "text": "$ 250",
+                        "align": "center",
+                        "weight": "bold"
+                    }
+                    ],
+                    "paddingAll": "10px"
+                },
+                {
+                    "type": "box",
+                    "layout": "horizontal",
+                    "contents": [
+                    {
+                        "type": "text",
+                        "text": "剪髮 + 洗髮",
+                        "align": "center",
+                        "weight": "bold"
+                    },
+                    {
+                        "type": "text",
+                        "text": "1小時",
+                        "align": "center",
+                        "weight": "bold"
+                    },
+                    {
+                        "type": "text",
+                        "text": "$ 400",
+                        "align": "center",
+                        "weight": "bold"
+                    }
+                    ],
+                    "paddingAll": "10px"
+                },
+                {
+                    "type": "separator",
+                    "margin": "md"
+                },
+                {
+                    "type": "box",
+                    "layout": "horizontal",
+                    "contents": [
+                    {
+                        "type": "text",
+                        "align": "center",
+                        "weight": "bold",
+                        "text": "燙髮(短)"
+                    },
+                    {
+                        "type": "text",
+                        "text": "2小時",
+                        "align": "center",
+                        "weight": "bold"
+                    },
+                    {
+                        "type": "text",
+                        "text": "$ 1500起",
+                        "align": "center",
+                        "weight": "bold"
+                    }
+                    ],
+                    "paddingAll": "10px"
+                },
+                {
+                    "type": "box",
+                    "layout": "horizontal",
+                    "contents": [
+                    {
+                        "type": "text",
+                        "text": "燙髮(中)",
+                        "align": "center",
+                        "weight": "bold"
+                    },
+                    {
+                        "type": "text",
+                        "text": "3.5小時",
+                        "align": "center",
+                        "weight": "bold"
+                    },
+                    {
+                        "type": "text",
+                        "text": "$ 2000",
+                        "align": "center",
+                        "weight": "bold"
+                    }
+                    ],
+                    "paddingAll": "10px"
+                },
+                {
+                    "type": "box",
+                    "layout": "horizontal",
+                    "contents": [
+                    {
+                        "type": "text",
+                        "text": "燙髮(長)",
+                        "align": "center",
+                        "weight": "bold"
+                    },
+                    {
+                        "type": "text",
+                        "text": "4小時",
+                        "align": "center",
+                        "weight": "bold"
+                    },
+                    {
+                        "type": "text",
+                        "text": "$ 2500",
+                        "align": "center",
+                        "weight": "bold"
+                    }
+                    ],
+                    "paddingAll": "10px"
+                },
+                {
+                    "type": "separator",
+                    "margin": "md"
+                },
+                {
+                    "type": "box",
+                    "layout": "horizontal",
+                    "contents": [
+                    {
+                        "type": "text",
+                        "text": "染髮(短)",
+                        "align": "center",
+                        "weight": "bold"
+                    },
+                    {
+                        "type": "text",
+                        "text": "1.5小時",
+                        "align": "center",
+                        "weight": "bold"
+                    },
+                    {
+                        "type": "text",
+                        "text": "$ 1200",
+                        "align": "center",
+                        "weight": "bold"
+                    }
+                    ],
+                    "paddingAll": "10px"
+                },
+                {
+                    "type": "box",
+                    "layout": "horizontal",
+                    "contents": [
+                    {
+                        "type": "text",
+                        "text": "染髮(中)",
+                        "align": "center",
+                        "weight": "bold"
+                    },
+                    {
+                        "type": "text",
+                        "text": "2小時",
+                        "align": "center",
+                        "weight": "bold"
+                    },
+                    {
+                        "type": "text",
+                        "text": "$ 1500",
+                        "align": "center",
+                        "weight": "bold"
+                    }
+                    ],
+                    "paddingAll": "10px"
+                },
+                {
+                    "type": "box",
+                    "layout": "horizontal",
+                    "contents": [
+                    {
+                        "type": "text",
+                        "text": "染髮(長)",
+                        "align": "center",
+                        "weight": "bold"
+                    },
+                    {
+                        "type": "text",
+                        "text": "2.5小時",
+                        "align": "center",
+                        "weight": "bold"
+                    },
+                    {
+                        "type": "text",
+                        "text": "$ 2000",
+                        "align": "center",
+                        "weight": "bold"
+                    }
+                    ],
+                    "paddingAll": "10px"
+                },
+                {
+                    "type": "separator",
+                    "margin": "md"
+                },
+                {
+                    "type": "box",
+                    "layout": "horizontal",
+                    "contents": [
+                    {
+                        "type": "text",
+                        "text": "剪劉海",
+                        "align": "center",
+                        "weight": "bold"
+                    },
+                    {
+                        "type": "text",
+                        "text": "30分鐘",
+                        "align": "center",
+                        "weight": "bold"
+                    },
+                    {
+                        "type": "text",
+                        "text": "$ 50",
+                        "align": "center",
+                        "weight": "bold"
+                    }
+                    ],
+                    "paddingAll": "10px"
+                },
+                {
+                    "type": "box",
+                    "layout": "horizontal",
+                    "contents": [
+                    {
+                        "type": "text",
+                        "text": "補 捲",
+                        "align": "center",
+                        "weight": "bold"
+                    },
+                    {
+                        "type": "text",
+                        "text": "30分鐘",
+                        "align": "center",
+                        "weight": "bold"
+                    },
+                    {
+                        "type": "text",
+                        "text": "$ 80",
+                        "align": "center",
+                        "weight": "bold"
+                    }
+                    ],
+                    "paddingAll": "10px"
+                }
+                ]
+            }
+        }
 
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(
-            "請選擇美髮項目💇\n\n" +
-            "剪髮： 30分鐘\n"   +
-            "洗髮： 30分鐘 \n"   +
-            "剪髮 + 洗髮： 1小時\n" +
-            "護髮 + 洗髮： 1小時\n\n"  +
-            "------------------\n\n" +
-            "男生燙髮： 2小時 \n\n " +
-            "女生燙髮： \n" +
-            "短髮： 2小時\n" +
-            "中長髮： 3.5小時\n" +
-            "長髮： 4小時\n\n" +
-            "------------------\n\n" +
-            "男女染髮： \n" +
-            "短髮： 1.5小時\n" +
-            "中長髮： 2小時\n" +
-            "長髮： 2.5小時"
-
+        line_bot_api.reply_message(event.reply_token, FlexSendMessage(alt_text = "價目表" , contents = flex_items
             ,quick_reply=QuickReply(
                 items=[
                     QuickReplyButton(
@@ -708,7 +1056,7 @@ def reply_postback(event):
                                             , data="剪髮(洗髮)")
                     ),
                     QuickReplyButton(
-                        action=PostbackAction(label="護髮+護髮"
+                        action=PostbackAction(label="護髮+洗髮"
                                             , data="護髮(洗髮)")
                     ),
                     QuickReplyButton(
