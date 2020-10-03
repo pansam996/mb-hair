@@ -780,13 +780,13 @@ def reply_postback(event):
                     "contents": [
                     {
                         "type": "text",
-                        "text": "小孩剪髮",
+                        "text": "小孩單剪",
                         "align": "center",
                         "weight": "bold"
                     },
                     {
                         "type": "text",
-                        "text": "1小時",
+                        "text": "30分鐘",
                         "align": "center",
                         "weight": "bold"
                     },
@@ -992,6 +992,110 @@ def reply_postback(event):
                     "contents": [
                     {
                         "type": "text",
+                        "text": "護髮(短)",
+                        "align": "center",
+                        "weight": "bold"
+                    },
+                    {
+                        "type": "text",
+                        "text": "30分鐘",
+                        "align": "center",
+                        "weight": "bold"
+                    },
+                    {
+                        "type": "text",
+                        "text": "$ 400起",
+                        "align": "center",
+                        "weight": "bold"
+                    }
+                    ],
+                    "paddingAll": "10px"
+                },
+                {
+                    "type": "box",
+                    "layout": "horizontal",
+                    "contents": [
+                    {
+                        "type": "text",
+                        "text": "護髮(中)",
+                        "align": "center",
+                        "weight": "bold"
+                    },
+                    {
+                        "type": "text",
+                        "text": "30分鐘",
+                        "align": "center",
+                        "weight": "bold"
+                    },
+                    {
+                        "type": "text",
+                        "text": "$ 500起",
+                        "align": "center",
+                        "weight": "bold"
+                    }
+                    ],
+                    "paddingAll": "10px"
+                },
+                {
+                    "type": "box",
+                    "layout": "horizontal",
+                    "contents": [
+                    {
+                        "type": "text",
+                        "text": "護髮(長)",
+                        "align": "center",
+                        "weight": "bold"
+                    },
+                    {
+                        "type": "text",
+                        "text": "30分鐘",
+                        "align": "center",
+                        "weight": "bold"
+                    },
+                    {
+                        "type": "text",
+                        "text": "$ 600起",
+                        "align": "center",
+                        "weight": "bold"
+                    }
+                    ],
+                    "paddingAll": "10px"
+                },
+                {
+                    "type": "box",
+                    "layout": "horizontal",
+                    "contents": [
+                    {
+                        "type": "text",
+                        "text": "頭皮 SP",
+                        "align": "center",
+                        "weight": "bold"
+                    },
+                    {
+                        "type": "text",
+                        "text": "30分鐘",
+                        "align": "center",
+                        "weight": "bold"
+                    },
+                    {
+                        "type": "text",
+                        "text": "$ 900",
+                        "align": "center",
+                        "weight": "bold"
+                    }
+                    ],
+                    "paddingAll": "10px"
+                },
+                {
+                    "type": "separator",
+                    "margin": "md"
+                },
+                {
+                    "type": "box",
+                    "layout": "horizontal",
+                    "contents": [
+                    {
+                        "type": "text",
                         "text": "剪劉海",
                         "align": "center",
                         "weight": "bold"
@@ -1038,7 +1142,7 @@ def reply_postback(event):
                 }
                 ]
             }
-        }
+            }
 
         line_bot_api.reply_message(event.reply_token, FlexSendMessage(alt_text = "價目表" , contents = flex_items
             ,quick_reply=QuickReply(
