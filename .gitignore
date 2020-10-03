@@ -109,3 +109,4 @@ ENV/
 .DS_Store
 tmp/
 *.iml
+*.png
