@@ -1565,6 +1565,27 @@ def reply_postback(event):
         return 0
 
     if event.postback.data == "女生剪髮":
+        line_bot_api.reply_message(event.reply_token, TextSendMessage("分類至『長髮』 or 『中長髮』 or 『短髮』"
+            ,quick_reply=QuickReply(
+                items=[
+                    QuickReplyButton(
+                        action=PostbackAction(label="長髮"
+                                            , data="女生長剪髮")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="中長髮"
+                                            , data="女生中長剪髮")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="短髮"
+                                            , data="女生短剪髮")
+                    )
+                ]
+        )))
+
+        return 0
+
+    if event.postback.data == "女生長剪髮":
         line_bot_api.reply_message(event.reply_token, TextSendMessage("已新增至作品集。"))
 
         DATABASE_URL = os.environ['DATABASE_URL']
@@ -1578,10 +1599,66 @@ def reply_postback(event):
         img_list = cursor.fetchone()
 
         # update to the portfolio
-        table_columns = '(add_date,pic_1,pic_2,pic_3,pic_4)'
-        sql = f"""insert into cut_male {table_columns} values (%s,%s,%s,%s,%s)"""
+        table_columns = '(add_date,pic_1,pic_2,pic_3,pic_4,lenth)'
+        sql = f"""insert into cut_male {table_columns} values (%s,%s,%s,%s,%s,%s)"""
         date = (datetime.datetime.now()+datetime.timedelta(days=0)).strftime("%m-%d")
-        cursor.execute(sql , (date,img_list[0],img_list[1],img_list[2],img_list[3]))
+        cursor.execute(sql , (date,img_list[0],img_list[1],img_list[2],img_list[3],'l'))
+        conn.commit()
+
+        #reset pic_num ,reset img_url
+        sql = "update manager set status='',pic_num = '0' ,pic_1 = '', pic_2 = '', pic_3 = '' where userid = 'Ue9484510f6a0ba4d68b30d0c759949c9'"
+        cursor.execute(sql)
+        conn.commit()
+
+
+        return 0
+
+    if event.postback.data == "女生中長剪髮":
+        line_bot_api.reply_message(event.reply_token, TextSendMessage("已新增至作品集。"))
+
+        DATABASE_URL = os.environ['DATABASE_URL']
+        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+        cursor = conn.cursor()
+
+        # get the url list
+        sql = "select pic_1,pic_2,pic_3,pic_4 from manager where userid = 'Ue9484510f6a0ba4d68b30d0c759949c9'"
+        cursor.execute(sql)
+        conn.commit()
+        img_list = cursor.fetchone()
+
+        # update to the portfolio
+        table_columns = '(add_date,pic_1,pic_2,pic_3,pic_4,lenth)'
+        sql = f"""insert into cut_male {table_columns} values (%s,%s,%s,%s,%s,%s)"""
+        date = (datetime.datetime.now()+datetime.timedelta(days=0)).strftime("%m-%d")
+        cursor.execute(sql , (date,img_list[0],img_list[1],img_list[2],img_list[3],'m'))
+        conn.commit()
+
+        #reset pic_num ,reset img_url
+        sql = "update manager set status='',pic_num = '0' ,pic_1 = '', pic_2 = '', pic_3 = '' where userid = 'Ue9484510f6a0ba4d68b30d0c759949c9'"
+        cursor.execute(sql)
+        conn.commit()
+
+
+        return 0
+
+    if event.postback.data == "女生短剪髮":
+        line_bot_api.reply_message(event.reply_token, TextSendMessage("已新增至作品集。"))
+
+        DATABASE_URL = os.environ['DATABASE_URL']
+        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+        cursor = conn.cursor()
+
+        # get the url list
+        sql = "select pic_1,pic_2,pic_3,pic_4 from manager where userid = 'Ue9484510f6a0ba4d68b30d0c759949c9'"
+        cursor.execute(sql)
+        conn.commit()
+        img_list = cursor.fetchone()
+
+        # update to the portfolio
+        table_columns = '(add_date,pic_1,pic_2,pic_3,pic_4,lenth)'
+        sql = f"""insert into cut_male {table_columns} values (%s,%s,%s,%s,%s,%s)"""
+        date = (datetime.datetime.now()+datetime.timedelta(days=0)).strftime("%m-%d")
+        cursor.execute(sql , (date,img_list[0],img_list[1],img_list[2],img_list[3],'s'))
         conn.commit()
 
         #reset pic_num ,reset img_url
@@ -2743,12 +2820,33 @@ def reply_postback(event):
         return 0
 
     if event.postback.data == "女生剪髮作品集":
+        line_bot_api.reply_message(event.reply_token, TextSendMessage("選擇『長髮』 or 『中長髮』 or 『短髮』"
+            ,quick_reply=QuickReply(
+                items=[
+                    QuickReplyButton(
+                        action=PostbackAction(label="長髮"
+                                            , data="女生長剪髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="中長髮"
+                                            , data="女生中長剪髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="短髮"
+                                            , data="女生短剪髮作品集")
+                    )
+                ]
+        )))
+
+        return 0
+
+    if event.postback.data == "女生長剪髮作品集":
         #DB set
         DATABASE_URL = os.environ['DATABASE_URL']
         conn = psycopg2.connect(DATABASE_URL, sslmode='require')
         cursor = conn.cursor()
 
-        sql = "select * from cut_male order by id DESC"
+        sql = "select * from cut_male where lenth = 'l' order by id DESC"
         cursor.execute(sql)
         conn.commit()
 
@@ -2947,7 +3045,457 @@ def reply_postback(event):
 
                 content['contents'].append(style1)
 
-        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="女生剪髮作品集",contents=content
+        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="女生長剪髮作品集",contents=content
+        ,quick_reply=QuickReply(
+                items=[
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生剪髮作品集"
+                                            , data="女生剪髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生染髮作品集"
+                                            , data="女生染髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生燙髮作品集"
+                                            , data="女生燙髮作品集")
+                    )
+                ]
+        )))
+
+        return 0
+
+    if event.postback.data == "女生中長剪髮作品集":
+        #DB set
+        DATABASE_URL = os.environ['DATABASE_URL']
+        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+        cursor = conn.cursor()
+
+        sql = "select * from cut_male where lenth = 'm' order by id DESC"
+        cursor.execute(sql)
+        conn.commit()
+
+        result = cursor.fetchall()
+        if not result:
+            line_bot_api.reply_message(event.reply_token, TextSendMessage("目前沒有作品"))
+            return 0
+
+        content = {
+            "type": "carousel",
+            "contents": [
+            ]
+        }
+
+        max_num = len(result)
+        if max_num > 10:
+            max_num = 10
+
+        for i in range(max_num):
+            style1 = {
+                "type": "bubble",
+                "size": "giga",
+                "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "full",
+                            "aspectRatio": "50:100"
+                        }
+                        ]
+                    },
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "button",
+                            "action": {
+                            "type": "postback",
+                            "label": "刪除",
+                            "data": "刪除作品集#cut_male#"
+                            },
+                            "style": "primary",
+                            "height": "md",
+                            "offsetBottom": "10px"
+                        }
+                        ],
+                        "offsetTop": "10px",
+                        "paddingAll": "10px"
+                    }
+                    ],
+                    "paddingAll": "10px"
+                }
+            }
+
+            style2 = {
+                "type": "bubble",
+                "size": "giga",
+                "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "full",
+                            "aspectRatio": "100:100"
+                        },
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "full",
+                            "aspectRatio": "100:100"
+                        }
+                        ]
+                    },
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "button",
+                            "action": {
+                            "type": "postback",
+                            "label": "刪除",
+                            "data": "刪除作品集#cut_male#"
+                            },
+                            "style": "primary",
+                            "height": "md",
+                            "offsetBottom": "10px"
+                        }
+                        ],
+                        "offsetTop": "10px",
+                        "paddingAll": "10px"
+                    }
+                    ],
+                    "paddingAll": "10px"
+                }
+            }
+
+            style3 = {
+                "type": "bubble",
+                "size": "giga",
+                "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "full"
+                        }
+                        ],
+                        "cornerRadius": "200px"
+                    },
+                    {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "5xl",
+                            "aspectRatio": "150:300"
+                        },
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "5xl",
+                            "aspectRatio": "150:300"
+                        }
+                        ]
+                    },
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "button",
+                            "action": {
+                            "type": "postback",
+                            "label": "刪除",
+                            "data": "刪除作品集#cut_male#"
+                            },
+                            "style": "primary",
+                            "height": "md",
+                            "offsetBottom": "10px"
+                        }
+                        ],
+                        "offsetTop": "10px",
+                        "paddingAll": "10px"
+                    }
+                    ],
+                    "paddingAll": "10px"
+                }
+            }
+
+            if result[i][4]!= "":
+                style3['body']['contents'][2]['contents'][0]['action']['data'] += str(result[i][0])
+                style3['body']['contents'][0]['contents'][0]['url'] = result[i][2]
+                style3['body']['contents'][1]['contents'][0]['url'] = result[i][3]
+                style3['body']['contents'][1]['contents'][1]['url'] = result[i][4]
+
+                content['contents'].append(style3)
+            elif result[i][3] != "":
+                style2['body']['contents'][1]['contents'][0]['action']['data'] += str(result[i][0])
+                style2['body']['contents'][0]['contents'][0]['url'] = result[i][2]
+                style2['body']['contents'][0]['contents'][1]['url'] = result[i][3]
+
+                content['contents'].append(style2)
+
+            else:
+                style1['body']['contents'][1]['contents'][0]['action']['data'] += str(result[i][0])
+                style1['body']['contents'][0]['contents'][0]['url'] = result[i][2]
+
+                content['contents'].append(style1)
+
+        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="女生中長剪髮作品集",contents=content
+        ,quick_reply=QuickReply(
+                items=[
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生剪髮作品集"
+                                            , data="女生剪髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生染髮作品集"
+                                            , data="女生染髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生燙髮作品集"
+                                            , data="女生燙髮作品集")
+                    )
+                ]
+        )))
+
+        return 0
+
+    if event.postback.data == "女生短剪髮作品集":
+        #DB set
+        DATABASE_URL = os.environ['DATABASE_URL']
+        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+        cursor = conn.cursor()
+
+        sql = "select * from cut_male where lenth = 's' order by id DESC"
+        cursor.execute(sql)
+        conn.commit()
+
+        result = cursor.fetchall()
+        if not result:
+            line_bot_api.reply_message(event.reply_token, TextSendMessage("目前沒有作品"))
+            return 0
+
+        content = {
+            "type": "carousel",
+            "contents": [
+            ]
+        }
+
+        max_num = len(result)
+        if max_num > 10:
+            max_num = 10
+
+        for i in range(max_num):
+            style1 = {
+                "type": "bubble",
+                "size": "giga",
+                "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "full",
+                            "aspectRatio": "50:100"
+                        }
+                        ]
+                    },
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "button",
+                            "action": {
+                            "type": "postback",
+                            "label": "刪除",
+                            "data": "刪除作品集#cut_male#"
+                            },
+                            "style": "primary",
+                            "height": "md",
+                            "offsetBottom": "10px"
+                        }
+                        ],
+                        "offsetTop": "10px",
+                        "paddingAll": "10px"
+                    }
+                    ],
+                    "paddingAll": "10px"
+                }
+            }
+
+            style2 = {
+                "type": "bubble",
+                "size": "giga",
+                "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "full",
+                            "aspectRatio": "100:100"
+                        },
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "full",
+                            "aspectRatio": "100:100"
+                        }
+                        ]
+                    },
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "button",
+                            "action": {
+                            "type": "postback",
+                            "label": "刪除",
+                            "data": "刪除作品集#cut_male#"
+                            },
+                            "style": "primary",
+                            "height": "md",
+                            "offsetBottom": "10px"
+                        }
+                        ],
+                        "offsetTop": "10px",
+                        "paddingAll": "10px"
+                    }
+                    ],
+                    "paddingAll": "10px"
+                }
+            }
+
+            style3 = {
+                "type": "bubble",
+                "size": "giga",
+                "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "full"
+                        }
+                        ],
+                        "cornerRadius": "200px"
+                    },
+                    {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "5xl",
+                            "aspectRatio": "150:300"
+                        },
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "5xl",
+                            "aspectRatio": "150:300"
+                        }
+                        ]
+                    },
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "button",
+                            "action": {
+                            "type": "postback",
+                            "label": "刪除",
+                            "data": "刪除作品集#cut_male#"
+                            },
+                            "style": "primary",
+                            "height": "md",
+                            "offsetBottom": "10px"
+                        }
+                        ],
+                        "offsetTop": "10px",
+                        "paddingAll": "10px"
+                    }
+                    ],
+                    "paddingAll": "10px"
+                }
+            }
+
+            if result[i][4]!= "":
+                style3['body']['contents'][2]['contents'][0]['action']['data'] += str(result[i][0])
+                style3['body']['contents'][0]['contents'][0]['url'] = result[i][2]
+                style3['body']['contents'][1]['contents'][0]['url'] = result[i][3]
+                style3['body']['contents'][1]['contents'][1]['url'] = result[i][4]
+
+                content['contents'].append(style3)
+            elif result[i][3] != "":
+                style2['body']['contents'][1]['contents'][0]['action']['data'] += str(result[i][0])
+                style2['body']['contents'][0]['contents'][0]['url'] = result[i][2]
+                style2['body']['contents'][0]['contents'][1]['url'] = result[i][3]
+
+                content['contents'].append(style2)
+
+            else:
+                style1['body']['contents'][1]['contents'][0]['action']['data'] += str(result[i][0])
+                style1['body']['contents'][0]['contents'][0]['url'] = result[i][2]
+
+                content['contents'].append(style1)
+
+        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="女生短剪髮作品集",contents=content
         ,quick_reply=QuickReply(
                 items=[
                     QuickReplyButton(
@@ -4386,12 +4934,33 @@ def reply_postback(event):
         return 0
 
     if event.postback.data == "查看女生剪髮作品集":
+        line_bot_api.reply_message(event.reply_token, TextSendMessage("選擇『長髮』 or 『中長髮』 or 『短髮』"
+            ,quick_reply=QuickReply(
+                items=[
+                    QuickReplyButton(
+                        action=PostbackAction(label="長髮"
+                                            , data="查看女生長剪髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="中長髮"
+                                            , data="查看女生中長剪髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="短髮"
+                                            , data="查看女生短剪髮作品集")
+                    )
+                ]
+        )))
+
+        return 0
+
+    if event.postback.data == "查看女生長剪髮作品集":
         #DB set
         DATABASE_URL = os.environ['DATABASE_URL']
         conn = psycopg2.connect(DATABASE_URL, sslmode='require')
         cursor = conn.cursor()
 
-        sql = "select * from cut_male order by id DESC"
+        sql = "select * from cut_male where lenth = 'l' order by id DESC"
         cursor.execute(sql)
         conn.commit()
 
@@ -4530,7 +5099,337 @@ def reply_postback(event):
 
                 content['contents'].append(style1)
 
-        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="女生剪髮作品集",contents=content
+        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="女生長剪髮作品集",contents=content
+        ,quick_reply=QuickReply(
+                items=[
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生剪髮作品集"
+                                            , data="查看女生剪髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生染髮作品集"
+                                            , data="查看女生染髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生燙髮作品集"
+                                            , data="查看女生燙髮作品集")
+                    )
+                ]
+        )))
+
+        return 0
+
+    if event.postback.data == "查看女生中長剪髮作品集":
+        #DB set
+        DATABASE_URL = os.environ['DATABASE_URL']
+        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+        cursor = conn.cursor()
+
+        sql = "select * from cut_male where lenth = 'm' order by id DESC"
+        cursor.execute(sql)
+        conn.commit()
+
+        result = cursor.fetchall()
+        if not result:
+            line_bot_api.reply_message(event.reply_token, TextSendMessage("目前沒有作品"))
+            return 0
+
+        content = {
+            "type": "carousel",
+            "contents": [
+            ]
+        }
+
+        max_num = len(result)
+        if max_num > 10:
+            max_num = 10
+
+        for i in range(max_num):
+            style1 = {
+                "type": "bubble",
+                "size": "giga",
+                "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "full",
+                            "aspectRatio": "50:100"
+                        }
+                        ]
+                    }
+                    ],
+                    "paddingAll": "10px"
+                }
+            }
+
+            style2 = {
+                "type": "bubble",
+                "size": "giga",
+                "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "full",
+                            "aspectRatio": "100:100"
+                        },
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "full",
+                            "aspectRatio": "100:100"
+                        }
+                        ]
+                    }
+                    ],
+                    "paddingAll": "10px"
+                }
+            }
+
+            style3 = {
+                "type": "bubble",
+                "size": "giga",
+                "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "full"
+                        }
+                        ],
+                        "cornerRadius": "200px"
+                    },
+                    {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "5xl",
+                            "aspectRatio": "150:300"
+                        },
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "5xl",
+                            "aspectRatio": "150:300"
+                        }
+                        ]
+                    }
+                    ],
+                    "paddingAll": "10px"
+                }
+            }
+
+            if result[i][4]!= "":
+                style3['body']['contents'][0]['contents'][0]['url'] = result[i][2]
+                style3['body']['contents'][1]['contents'][0]['url'] = result[i][3]
+                style3['body']['contents'][1]['contents'][1]['url'] = result[i][4]
+
+                content['contents'].append(style3)
+            elif result[i][3] != "":
+                style2['body']['contents'][0]['contents'][0]['url'] = result[i][2]
+                style2['body']['contents'][0]['contents'][1]['url'] = result[i][3]
+
+                content['contents'].append(style2)
+
+            else:
+                style1['body']['contents'][0]['contents'][0]['url'] = result[i][2]
+
+                content['contents'].append(style1)
+
+        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="女生中長剪髮作品集",contents=content
+        ,quick_reply=QuickReply(
+                items=[
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生剪髮作品集"
+                                            , data="查看女生剪髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生染髮作品集"
+                                            , data="查看女生染髮作品集")
+                    ),
+                    QuickReplyButton(
+                        action=PostbackAction(label="女生燙髮作品集"
+                                            , data="查看女生燙髮作品集")
+                    )
+                ]
+        )))
+
+        return 0
+
+    if event.postback.data == "查看女生短剪髮作品集":
+        #DB set
+        DATABASE_URL = os.environ['DATABASE_URL']
+        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+        cursor = conn.cursor()
+
+        sql = "select * from cut_male where lenth = 's' order by id DESC"
+        cursor.execute(sql)
+        conn.commit()
+
+        result = cursor.fetchall()
+        if not result:
+            line_bot_api.reply_message(event.reply_token, TextSendMessage("目前沒有作品"))
+            return 0
+
+        content = {
+            "type": "carousel",
+            "contents": [
+            ]
+        }
+
+        max_num = len(result)
+        if max_num > 10:
+            max_num = 10
+
+        for i in range(max_num):
+            style1 = {
+                "type": "bubble",
+                "size": "giga",
+                "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "full",
+                            "aspectRatio": "50:100"
+                        }
+                        ]
+                    }
+                    ],
+                    "paddingAll": "10px"
+                }
+            }
+
+            style2 = {
+                "type": "bubble",
+                "size": "giga",
+                "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "full",
+                            "aspectRatio": "100:100"
+                        },
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "full",
+                            "aspectRatio": "100:100"
+                        }
+                        ]
+                    }
+                    ],
+                    "paddingAll": "10px"
+                }
+            }
+
+            style3 = {
+                "type": "bubble",
+                "size": "giga",
+                "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "full"
+                        }
+                        ],
+                        "cornerRadius": "200px"
+                    },
+                    {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "contents": [
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "5xl",
+                            "aspectRatio": "150:300"
+                        },
+                        {
+                            "type": "image",
+                            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip13.jpg",
+                            "aspectMode": "cover",
+                            "size": "5xl",
+                            "aspectRatio": "150:300"
+                        }
+                        ]
+                    }
+                    ],
+                    "paddingAll": "10px"
+                }
+            }
+
+            if result[i][4]!= "":
+                style3['body']['contents'][0]['contents'][0]['url'] = result[i][2]
+                style3['body']['contents'][1]['contents'][0]['url'] = result[i][3]
+                style3['body']['contents'][1]['contents'][1]['url'] = result[i][4]
+
+                content['contents'].append(style3)
+            elif result[i][3] != "":
+                style2['body']['contents'][0]['contents'][0]['url'] = result[i][2]
+                style2['body']['contents'][0]['contents'][1]['url'] = result[i][3]
+
+                content['contents'].append(style2)
+
+            else:
+                style1['body']['contents'][0]['contents'][0]['url'] = result[i][2]
+
+                content['contents'].append(style1)
+
+        line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text="女生短剪髮作品集",contents=content
         ,quick_reply=QuickReply(
                 items=[
                     QuickReplyButton(
