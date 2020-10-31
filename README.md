@@ -34,7 +34,7 @@ Demo 影片：https://youtu.be/bMTtr_RR0Bo
 
 ---
 #### 聯絡我們
-![](https://i.imgur.com/fgMb033.jpg =50%x)
+![](https://i.imgur.com/fgMb033.jpg)
 
 
 
