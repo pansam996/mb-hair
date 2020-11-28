@@ -805,7 +805,7 @@ def reply_postback(event):
                     "contents": [
                     {
                         "type": "text",
-                        "text": "剪髮 + 洗髮",
+                        "text": "剪髮",
                         "align": "center",
                         "weight": "bold"
                     },
